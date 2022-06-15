@@ -48,6 +48,7 @@ type tTextListState
   bRedisplay as integer
   bScrollingUp as integer
   bClickToSelect as integer
+  bScrollWheelAnywhere as integer
 endtype
 
 
@@ -71,6 +72,7 @@ tl as tTextListState
   tl.bRedisplay = 0
   tl.bScrollingUp = 0
   tl.bClickToSelect = 0
+  tl.bScrollWheelAnywhere = 1
 
 endfunction tl
 
@@ -209,19 +211,21 @@ function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pr
     tl.dragy# = tl.y# - 1
   endif
 
-  if GetRawMouseWheelDelta() > 0
-  // scroll up
-    if tl.topindex > 0 then tl.topindex = tl.topindex - 1
-    tl.scrolloffset# = 0
-    tl.bShowLastLine = 0
-    tl.bRedisplay = 1
-    tl.bScrollingUp = 1
-  elseif GetRawMouseWheelDelta() < 0
-  // scroll down
-    if tl.topindex < tl.list.length and tl.bShowLastLine = 0 then tl.topindex = tl.topindex + 1
-    tl.scrolloffset# = 0
-    tl.bRedisplay = 1
-    tl.bScrollingUp = 0
+  if tl.bScrollWheelAnywhere <> 0 or (x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#)
+    if GetRawMouseWheelDelta() > 0
+    // scroll up
+      if tl.topindex > 0 then tl.topindex = tl.topindex - 1
+      tl.scrolloffset# = 0
+      tl.bShowLastLine = 0
+      tl.bRedisplay = 1
+      tl.bScrollingUp = 1
+    elseif GetRawMouseWheelDelta() < 0
+    // scroll down
+      if tl.topindex < tl.list.length and tl.bShowLastLine = 0 then tl.topindex = tl.topindex + 1
+      tl.scrolloffset# = 0
+      tl.bRedisplay = 1
+      tl.bScrollingUp = 0
+    endif
   endif
 
 // display text
@@ -332,7 +336,6 @@ endfunction
 
 // set one item to selected
 function TextList_SetSelected( tl ref as tTextListState, index as integer )
-
 sprite as integer
 
   if index >= 0 and index <= tl.list.length
@@ -378,7 +381,6 @@ endfunction
 
 // return selected state of an item
 function TextList_GetSelected( tl ref as tTextListState, index as integer )
-
 ret as integer = 0
 
   if index >= 0 and index <= tl.list.length then ret = tl.list[index].background > 0
@@ -425,6 +427,12 @@ function TextList_SetSpacing( tl ref as tTextListState, spacing# as float )
   next i
   tl.bRedisplay = 1
 
+endfunction
+
+
+// set mouse bounds for scroll wheel to anywhere or within list only
+function TextList_SetScrollWheelAnywhere( tl ref as tTextListState, bScrollWheelAnywhere as integer )
+  tl.bScrollWheelAnywhere = bScrollWheelAnywhere
 endfunction
 
 
