@@ -38,6 +38,7 @@ tl as tTextListState
   TextList_SetSelected( tl, 1 )
   TextList_SetSelected( tl, 21 )
   TextList_SetClickToSelect( tl, 1 )
+//  TextList_SetScrollWheelAnywhere( tl, 0 )
 
 //  TextList_Delete( tl )
 
@@ -66,7 +67,6 @@ loop
 
 
 function intarraytostring( ints as integer[] )
-
 s$ as string
 
   for i = 0 to ints.length
@@ -74,5 +74,4 @@ s$ as string
   next i
 
 endfunction s$
-
 
