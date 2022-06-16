@@ -110,7 +110,7 @@ endfunction
 
 
 // set text for a menu item
-function Menu_SetText( m ref as tMenuState, index as integer, text$ as string, size as integer, color as integer, justify as integer )
+function Menu_SetText( m ref as tMenuState, index as integer, text$ as string, size as integer, color as integer, justify as integer, xoffset# as float )
 
   if m.list[index].text <> 0 then DeleteText( m.list[index].text )
   if CompareString( "", text$ )
@@ -131,15 +131,15 @@ function Menu_SetText( m ref as tMenuState, index as integer, text$ as string, s
 
     select justify
       case Menu_Center:
-        SetTextPosition( id, x# + (swidth# - twidth#)/2, y# + (sheight# - theight#)/2 )
+        SetTextPosition( id, x# + (swidth# - twidth#)/2 + xoffset#, y# + (sheight# - theight#)/2 )
       endcase
 
       case Menu_AlignLeft:
-        SetTextPosition( id, x#, y# + (sheight# - theight#)/2 )
+        SetTextPosition( id, x# + xoffset#, y# + (sheight# - theight#)/2 )
       endcase
 
       case Menu_AlignRight:
-        SetTextPosition( id, x# + swidth# - twidth#, y# + (sheight# - theight#)/2 )
+        SetTextPosition( id, x# + swidth# - twidth# + xoffset#, y# + (sheight# - theight#)/2 )
       endcase
     endselect
   endif
