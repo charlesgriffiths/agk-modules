@@ -170,7 +170,7 @@ endfunction
 function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
 
   // if the pointer is in bounds
-  if x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#
+  if tl.bActive and x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#
     if pressed > 0
       tl.dragy# = y#
       tl.mousedownx# = x#
@@ -211,25 +211,27 @@ function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pr
     tl.dragy# = tl.y# - 1
   endif
 
-  if tl.bScrollWheelAnywhere <> 0 or (x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#)
-    if GetRawMouseWheelDelta() > 0
-    // scroll up
-      if tl.topindex > 0 then tl.topindex = tl.topindex - 1
-      tl.scrolloffset# = 0
-      tl.bShowLastLine = 0
-      tl.bRedisplay = 1
-      tl.bScrollingUp = 1
-    elseif GetRawMouseWheelDelta() < 0
-    // scroll down
-      if tl.topindex < tl.list.length and tl.bShowLastLine = 0 then tl.topindex = tl.topindex + 1
-      tl.scrolloffset# = 0
-      tl.bRedisplay = 1
-      tl.bScrollingUp = 0
+  if tl.bActive
+    if tl.bScrollWheelAnywhere <> 0 or (x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#)
+      if GetRawMouseWheelDelta() > 0
+      // scroll up
+        if tl.topindex > 0 then tl.topindex = tl.topindex - 1
+        tl.scrolloffset# = 0
+        tl.bShowLastLine = 0
+        tl.bRedisplay = 1
+        tl.bScrollingUp = 1
+      elseif GetRawMouseWheelDelta() < 0
+      // scroll down
+        if tl.topindex < tl.list.length and tl.bShowLastLine = 0 then tl.topindex = tl.topindex + 1
+        tl.scrolloffset# = 0
+        tl.bRedisplay = 1
+        tl.bScrollingUp = 0
+      endif
     endif
   endif
 
 // display text
-  if tl.bRedisplay > 0 and tl.topindex >= 0 and tl.topindex <= tl.list.length
+  if tl.bVisible and tl.bRedisplay > 0 and tl.topindex >= 0 and tl.topindex <= tl.list.length
   ypos# as float
 
     tl.bRedisplay = 0
@@ -433,6 +435,34 @@ endfunction
 // set mouse bounds for scroll wheel to anywhere or within list only
 function TextList_SetScrollWheelAnywhere( tl ref as tTextListState, bScrollWheelAnywhere as integer )
   tl.bScrollWheelAnywhere = bScrollWheelAnywhere
+endfunction
+
+
+// set textlist to visible or invisible
+function TextList_SetVisible( tl ref as tTextListState, bVisible as integer )
+
+  tl.bVisible = bVisible
+  tl.bRedisplay = bVisible
+  TextList_SetActive( tl, bVisible )
+
+  if bVisible = 0
+    for i = 0 to tl.list.length
+      if tl.list[i].display > 0
+        DeleteText( tl.list[i].display )
+        tl.list[i].display = 0
+      endif
+      if tl.list[i].background > 0
+        SetSpriteVisible( tl.list[i].background, 0 )
+      endif
+    next i
+  endif
+
+endfunction
+
+
+// enable/disable the textlist
+function TextList_SetActive( tl ref as tTextListState, bActive as integer )
+  tl.bActive = bActive
 endfunction
 
 
