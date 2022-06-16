@@ -151,14 +151,18 @@ endfunction
 
 // call Slider_Update with mouse information
 function Slider_UpdateMouse( ss ref as tSliderState )
-  Slider_Update( ss, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  updated = Slider_Update( ss, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction updated
 
 
 // call Slider_Update once per frame, or whenever the Slider should be updated
 function Slider_Update( ss ref as tSliderState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+updated as integer = 0
 
-  if 0 = ss.bVisible or 0 = ss.bActive then exitfunction
+  if 0 = ss.bVisible or 0 = ss.bActive then exitfunction updated
+
+  pinx# = GetSpriteX( ss.pin )
+  piny# = GetSpriteY( ss.pin )
 
   if GetSpriteHitTest( ss.surface, x#, y# ) and state
     xmin# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.pin ) / 2
@@ -171,9 +175,10 @@ function Slider_Update( ss ref as tSliderState, x# as float, y# as float, presse
     if y# > ymax# then y# = ymax#
 
     SetSpritePositionByOffset( ss.pin, x#, y# )
+    updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
   endif
 
-endfunction
+endfunction updated
 
 
 // set slider to visible or invisible
