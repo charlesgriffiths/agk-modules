@@ -59,6 +59,7 @@ sl as tSpriteListState
   sl.topindex = 0
   sl.scrolloffset# = 0
   sl.bActive = 1
+  sl.bVisible = 1
   sl.bShowLastSprite = 0
   sl.bRedisplay = 0
   sl.bScrollingUp = 0
@@ -154,7 +155,7 @@ endfunction
 function SpriteList_Update( sl ref as tSpriteListState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
 
   // if the pointer is in bounds
-  if x# >= sl.x# and y# >= sl.y# and x# <= sl.x# + sl.width# and y# <= sl.y# + sl.height#
+  if sl.bActive and x# >= sl.x# and y# >= sl.y# and x# <= sl.x# + sl.width# and y# <= sl.y# + sl.height#
     if pressed > 0
       sl.dragy# = y#
       sl.mousedownx# = x#
@@ -195,25 +196,27 @@ function SpriteList_Update( sl ref as tSpriteListState, x# as float, y# as float
     sl.dragy# = sl.y# - 1
   endif
 
-  if sl.bScrollWheelAnywhere or (x# >= sl.x# and y# >= sl.y# and x# <= sl.x# + sl.width# and y# <= sl.y# + sl.height#)
-    if GetRawMouseWheelDelta() > 0
-    // scroll up
-      if sl.topindex > 0 then sl.topindex = sl.topindex - 1
-      sl.scrolloffset# = 0
-      sl.bShowLastSprite = 0
-      sl.bRedisplay = 1
-      sl.bScrollingUp = 1
-    elseif GetRawMouseWheelDelta() < 0
-    // scroll down
-      if sl.topindex < sl.list.length and sl.bShowLastSprite = 0 then sl.topindex = sl.topindex + 1
-      sl.scrolloffset# = 0
-      sl.bRedisplay = 1
-      sl.bScrollingUp = 0
+  if sl.bActive
+    if sl.bScrollWheelAnywhere or (x# >= sl.x# and y# >= sl.y# and x# <= sl.x# + sl.width# and y# <= sl.y# + sl.height#)
+      if GetRawMouseWheelDelta() > 0
+      // scroll up
+        if sl.topindex > 0 then sl.topindex = sl.topindex - 1
+        sl.scrolloffset# = 0
+        sl.bShowLastSprite = 0
+        sl.bRedisplay = 1
+        sl.bScrollingUp = 1
+      elseif GetRawMouseWheelDelta() < 0
+      // scroll down
+        if sl.topindex < sl.list.length and sl.bShowLastSprite = 0 then sl.topindex = sl.topindex + 1
+        sl.scrolloffset# = 0
+        sl.bRedisplay = 1
+        sl.bScrollingUp = 0
+      endif
     endif
   endif
 
 // display
-  if sl.bRedisplay > 0 and sl.topindex >= 0 and sl.topindex <= sl.list.length
+  if sl.bVisible and sl.bRedisplay > 0 and sl.topindex >= 0 and sl.topindex <= sl.list.length
   ypos# as float
 
     sl.bRedisplay = 0
@@ -369,6 +372,28 @@ endfunction
 // set mouse bounds for scroll wheel to anywhere or within list only
 function SpriteList_SetScrollWheelAnywhere( sl ref as tSpriteListState, bScrollWheelAnywhere as integer )
   sl.bScrollWheelAnywhere = bScrollWheelAnywhere
+endfunction
+
+
+// set spritelist to visible or invisible
+function SpriteList_SetVisible( sl ref as tSpriteListState, bVisible as integer )
+
+  sl.bVisible = bVisible
+  sl.bRedisplay = bVisible
+  SpriteList_SetActive( sl, bVisible )
+
+  if bVisible = 0
+    for i = 0 to sl.list.length
+      SetSpriteVisible( sl.list[i], 0 )
+    next i
+  endif
+
+endfunction
+
+
+// enable/disable the spritelist
+function SpriteList_SetActive( sl ref as tSpriteListState, bActive as integer )
+  sl.bActive = bActive
 endfunction
 
 
