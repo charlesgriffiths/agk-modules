@@ -68,6 +68,7 @@ tl as tTextListState
   tl.topindex = 0
   tl.scrolloffset# = 0
   tl.bActive = 1
+  tl.bVisible = 1
   tl.bShowLastLine = 0
   tl.bRedisplay = 0
   tl.bScrollingUp = 0
