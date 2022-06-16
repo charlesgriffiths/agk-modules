@@ -51,17 +51,17 @@ choice2 as integer = -1
 
   color = MakeColor( 0, 0, 0, 255 )
 
-  Menu_SetText( m, 0, "Right ", 50, color, Menu_AlignRight )
-  Menu_SetText( m, 1, " Left", 50, color, Menu_AlignLeft )
-  Menu_SetText( m, 2, "Center", 50, color, Menu_Center )
-  Menu_SetText( m, 3, "Center 40", 40, color, Menu_Center )
-  Menu_SetText( m, 4, "This text is far far too long", 30, color, Menu_Center )
+  Menu_SetText( m, 0, "Right", 50, color, Menu_AlignRight, -20 )
+  Menu_SetText( m, 1, "Left", 50, color, Menu_AlignLeft, 20 )
+  Menu_SetText( m, 2, "Center", 50, color, Menu_Center, 0 )
+  Menu_SetText( m, 3, "Center 40", 40, color, Menu_Center, 0 )
+  Menu_SetText( m, 4, "This text is far far too long", 30, color, Menu_Center, 0 )
 
-  Menu_SetText( m2, 0, "One", 50, color, Menu_Center )
-  Menu_SetText( m2, 1, "Two", 50, color, Menu_Center )
-  Menu_SetText( m2, 2, "Three", 50, color, Menu_Center )
-  Menu_SetText( m2, 3, "Four", 50, color, Menu_Center )
-  Menu_SetText( m2, 4, "Five", 50, color, Menu_Center )
+  Menu_SetText( m2, 0, "One", 50, color, Menu_Center, 0 )
+  Menu_SetText( m2, 1, "Two", 50, color, Menu_Center, 0 )
+  Menu_SetText( m2, 2, "Three", 50, color, Menu_Center, 0 )
+  Menu_SetText( m2, 3, "Four", 50, color, Menu_Center, 0 )
+  Menu_SetText( m2, 4, "Five", 50, color, Menu_Center, 0 )
 
 
 //  Menu_SetVisible( m2, 0 )
