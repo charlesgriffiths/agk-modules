@@ -29,6 +29,7 @@ type tProgressBarSpriteState
   bVertical as integer
   bDirection as integer
   bAlign as integer
+  bActive as integer
 endtype
 
 
@@ -51,6 +52,7 @@ pb as tProgressBarSpriteState
   pb.bVertical = 0
   pb.bDirection = 0
   pb.bAlign = 0
+  pb.bActive = 1
 
 endfunction pb
 
@@ -66,6 +68,8 @@ endfunction
 
 // call ProgressBar_Update once per frame, or whenever the progressbar state should be updated
 function ProgressBarSprite_Update( pb ref as tProgressBarSpriteState, progress as integer )
+
+  if 0 = pb.bActive then exitfunction
 
   if progress < 0 then progress = 0
   if progress > pb.maxprogress then progress = pb.maxprogress
@@ -93,8 +97,10 @@ function ProgressBarSprite_Update( pb ref as tProgressBarSpriteState, progress a
 
   SetSpritePosition( pb.sprite, spritex#, spritey# )
   SetSpriteScissor( pb.sprite, barx#, bary#, barx#+width#, bary#+height# )
+  updated = progress <> pb.progress
+  pb.progress = progress
 
-endfunction
+endfunction updated
 
 
 function ProgressBarSprite_UpdatePercent( pb ref as tProgressBarSpriteState, percent# as float )
@@ -143,9 +149,14 @@ function ProgressBarSprite_SetAlign( pb ref as tProgressBarSpriteState, bAlign a
 endfunction
 
 
+// activate/deactivate the progressbar
+function ProgressBarSprite_SetActive( pb ref as tProgressBarSpriteState, bActive as integer )
+  pb.bActive = bActive
+endfunction
+
+
 // draw a box around the progressbar area
 function ProgressBarSprite_DrawOutline( pb ref as tProgressBarSpriteState, color as integer )
   DrawBox( pb.x#, pb.y#, pb.x#+pb.width#, pb.y#+pb.height#, color, color, color, color, 0 )
 endfunction
-
 
