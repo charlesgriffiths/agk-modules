@@ -69,7 +69,7 @@ endfunction
 // call ProgressBar_Update once per frame, or whenever the progressbar state should be updated
 function ProgressBarSprite_Update( pb ref as tProgressBarSpriteState, progress as integer )
 
-  if 0 = pb.bActive then exitfunction
+  if 0 = pb.bActive then exitfunction 0
 
   if progress < 0 then progress = 0
   if progress > pb.maxprogress then progress = pb.maxprogress
