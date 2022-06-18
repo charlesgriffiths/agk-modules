@@ -91,18 +91,20 @@ endfunction mc.selected
 
 // call MultiCheckBox_Update with mouse information
 function MultiCheckBox_UpdateMouse( mc ref as tMultiCheckBoxState )
-  MultiCheckBox_Update( mc, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  updated = MultiCheckBox_Update( mc, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction updated
 
 
 // call MultiCheckBox_Update once per frame, or whenever the multicheckbox state should be updated
 function MultiCheckBox_Update( mc ref as tMultiCheckBoxState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+selection as integer
 
+  selection = mc.selected
   if released = 1 and mc.bActive <> 0
     if GetSpriteHitTest( mc.sprites[0], x#, y# ) then MultiCheckBox_Increment( mc )
   endif
 
-endfunction mc.selected
+endfunction selection <> mc.selected
 
 
 // set the multicheckbox to respond to or ignore screen scrolling
@@ -139,8 +141,10 @@ endfunction
 
 // set the display depth of the multicheckbox
 function MultiCheckBox_SetDepth( mc ref as tMultiCheckBoxState, depth as integer )
+
   for i = 0 to mc.sprites.length
     SetSpriteDepth( mc.sprites[i], depth )
   next i
+
 endfunction
 
