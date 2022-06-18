@@ -69,6 +69,9 @@ endfunction
 
 // call ProgressCircle_Update once per frame, or whenever the progresscircle state should be updated
 function ProgressCircle_Update( pc ref as tProgressCircleState, progress as integer )
+state as integer
+
+  state = pc.progress
 
   if progress < 0 then progress = 0
   if progress > pc.sprites.length then progress = pc.sprites.length+1
@@ -88,7 +91,7 @@ function ProgressCircle_Update( pc ref as tProgressCircleState, progress as inte
     pc.progress = progress
   endif
 
-endfunction
+endfunction state <> pc.progress
 
 
 function ProgressCircle_UpdatePercent( pc ref as tProgressCircleState, percent# as float )
