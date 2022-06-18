@@ -163,12 +163,18 @@ endfunction
 
 // call TextList_Update with mouse information
 function TextList_UpdateMouse( tl ref as tTextListState )
-  TextList_Update( tl, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  updated = TextList_Update( tl, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction updated
 
 
 // call TextList_Update once per frame, or whenever the textlist should be updated
 function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+updated as integer = 0
+savedtopindex as integer
+savedscrolloffset# as float
+
+  savedtopindex = tl.topindex
+  savedscrolloffset# = tl.scrolloffset#
 
   // if the pointer is in bounds
   if tl.bActive and x# >= tl.x# and y# >= tl.y# and x# <= tl.x# + tl.width# and y# <= tl.y# + tl.height#
@@ -196,6 +202,7 @@ function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pr
         for i = tl.topindex to tl.list.length
           if tl.list[i].display > 0
             if GetTextHitTest( tl.list[i].display, 1+tl.x#, y# ) > 0
+              updated = 1
               if TextList_GetSelected( tl, i )
                 TextList_ClearSelected( tl, i )
               else
@@ -313,7 +320,7 @@ function TextList_Update( tl ref as tTextListState, x# as float, y# as float, pr
     endif
   endif
 
-endfunction
+endfunction updated or savedscrolloffset# <> tl.scrolloffset# or savedtopindex <> tl.topindex
 
 
 // internal. make a text line ready to display
