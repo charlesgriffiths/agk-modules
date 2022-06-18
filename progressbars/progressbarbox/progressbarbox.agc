@@ -58,7 +58,7 @@ endfunction pb
 
 
 
-// call ProgressBarLine_Update once per frame, or whenever the progressbar state should be updated
+// call ProgressBarLine_Update once per frame, or whenever the progressbar should be drawn
 function ProgressBarBox_Update( pb ref as tProgressBarBoxState, progress as integer )
 
   if progress < 0 then progress = 0
@@ -71,6 +71,7 @@ function ProgressBarBox_Update( pb ref as tProgressBarBoxState, progress as inte
       DrawBox( pb.x#, pb.y#, pb.x# + pb.width#, pb.y# + (progress * pb.height#)/pb.maxprogress, pb.color1, pb.color2, pb.color3, pb.color4, pb.bFilled )
     endif
   endif
+
 endfunction
 
 
