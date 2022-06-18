@@ -147,12 +147,18 @@ endfunction
 
 // call SpriteList_Update with mouse information
 function SpriteList_UpdateMouse( sl ref as tSpriteListState )
-  SpriteList_Update( sl, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  updated = SpriteList_Update( sl, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction updated
 
 
 // call SpriteList_Update once per frame, or whenever the spritelist should be updated
 function SpriteList_Update( sl ref as tSpriteListState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+updated as integer = 0
+savedtopindex as integer
+savedscrolloffset# as float
+
+  savedtopindex = sl.topindex
+  savedscrolloffset# = sl.scrolloffset#
 
   // if the pointer is in bounds
   if sl.bActive and x# >= sl.x# and y# >= sl.y# and x# <= sl.x# + sl.width# and y# <= sl.y# + sl.height#
@@ -180,6 +186,7 @@ function SpriteList_Update( sl ref as tSpriteListState, x# as float, y# as float
         for i = sl.topindex to sl.list.length
           if GetSpriteVisible( sl.list[i] )
             if GetSpriteHitTest( sl.list[i], 1+sl.x#, y# ) > 0
+              updated = 1
               if SpriteList_GetSelected( sl, i )
                 SpriteList_ClearSelected( sl, i )
               else
@@ -285,7 +292,7 @@ function SpriteList_Update( sl ref as tSpriteListState, x# as float, y# as float
     endif
   endif
 
-endfunction
+endfunction updated or savedscrolloffset# <> sl.scrolloffset# or savedtopindex <> sl.topindex
 
 
 // internal. make a sprite ready to display
