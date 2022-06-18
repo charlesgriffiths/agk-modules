@@ -50,7 +50,7 @@ pb as tProgressBarLineState
 endfunction pb
 
 
-// call ProgressBarLine_Update once per frame, or whenever the progressbar state should be updated
+// call ProgressBarLine_Update once per frame, or whenever the progressbar should be drawn
 function ProgressBarLine_Update( pb ref as tProgressBarLineState, progress as integer )
 
   if progress < 0 then progress = 0
