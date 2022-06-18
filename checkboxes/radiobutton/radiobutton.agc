@@ -117,13 +117,15 @@ endfunction rb.selected
 
 // call RadioButton_Update with mouse information
 function RadioButton_UpdateMouse( rb ref as tRadioButtonState )
-  RadioButton_Update( rb, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  updated = RadioButton_Update( rb, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction updated
 
 
 // call RadioButton_Update once per frame, or whenever the radiobutton state should be updated
 function RadioButton_Update( rb ref as tRadioButtonState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+selected as integer
 
+  selected = rb.selected
   if released = 1 and rb.bActive <> 0
     for i = 0 to rb.unselectedsprites.length
       if GetSpriteHitTest( rb.unselectedsprites[i], x#, y# )
@@ -136,7 +138,7 @@ function RadioButton_Update( rb ref as tRadioButtonState, x# as float, y# as flo
     next i
   endif
 
-endfunction rb.selected
+endfunction selected <> rb.selected
 
 
 // set the radiobutton to respond to or ignore screen scrolling
