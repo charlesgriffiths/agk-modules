@@ -71,7 +71,9 @@ endfunction
 
 // call ProgressBar_Update once per frame, or whenever the progressbar state should be updated
 function ProgressBar_Update( pb ref as tProgressBarState, progress as integer )
+state as integer
 
+  state = pb.progress
   if progress < 0 then progress = 0
   if progress > pb.sprites.length then progress = pb.sprites.length+1
 
@@ -90,7 +92,7 @@ function ProgressBar_Update( pb ref as tProgressBarState, progress as integer )
     pb.progress = progress
   endif
 
-endfunction
+endfunction state <> pb.progress
 
 
 function ProgressBar_UpdatePercent( pb ref as tProgressBarState, percent# as float )
