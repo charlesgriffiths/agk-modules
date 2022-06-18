@@ -86,12 +86,13 @@ endfunction cb.checked
 
 // call CheckBox_Update with mouse information
 function CheckBox_UpdateMouse( cb ref as tCheckBoxState )
-  CheckBox_Update( cb, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
-endfunction
+  changed = CheckBox_Update( cb, ScreenToWorldX(GetPointerX()), ScreenToWorldY(GetPointerY()), GetPointerPressed(), GetPointerReleased(), GetPointerState() )
+endfunction changed
 
 
 // call CheckBox_Update once per frame, or whenever the checkbox state should be updated
 function CheckBox_Update( cb ref as tCheckBoxState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
+state = cb.checked
 
   if released = 1 and cb.bActive <> 0
     if GetSpriteHitTest( cb.checkedsprite, x#, y# )
@@ -103,7 +104,7 @@ function CheckBox_Update( cb ref as tCheckBoxState, x# as float, y# as float, pr
     endif
   endif
 
-endfunction cb.checked
+endfunction state <> cb.checked
 
 
 // set the checkbox to respond to or ignore screen scrolling
@@ -143,5 +144,4 @@ function CheckBox_SetDepth( cb ref as tCheckBoxState, depth as integer )
   SetSpriteDepth( cb.uncheckedsprite, depth )
 
 endfunction
-
 
