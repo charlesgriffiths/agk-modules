@@ -59,7 +59,7 @@ db as tDialogBoxState
   db.bgsprite = 0
   if 0 <> bgsprite
     db.bgsprite = CloneSprite( bgsprite )
-    SetSpriteVisible( bgsprite, 0 )
+    SetSpriteVisible( db.bgsprite, 0 )
   endif
 
   db.bBoldHoverText = 1
