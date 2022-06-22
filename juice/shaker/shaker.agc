@@ -220,6 +220,7 @@ endfunction
 // internal helper function to start shaking, sets mode to ShakerModeShaking in case it is called externally by accident
 function Shaker_StartShaking( sh ref as tShakerState )
 
+  if ShakerModeStill <> sh.mode then Shaker_StopShaking( sh )
   sh.mode = ShakerModeShaking
   sh.shakeprogress# = 0
 
@@ -266,6 +267,7 @@ endfunction id
 // shake camera one
 function Shaker_ShakeCamera( sh ref as tShakerState )
 
+  if ShakerModeStill <> sh.mode then Shaker_StopShaking( sh )
   sh.mode = ShakerModeCamera
   sh.shakeprogress# = 0
   sh.savex# = GetCameraX( 1 )
@@ -278,6 +280,7 @@ endfunction
 // shake the screen view
 function Shaker_ShakeScreen( sh ref as tShakerState )
 
+  if ShakerModeStill <> sh.mode then Shaker_StopShaking( sh )
   sh.mode = ShakerModeView
   sh.shakeprogress# = 0
   sh.savex# = GetViewOffsetX()
