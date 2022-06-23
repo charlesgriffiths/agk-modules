@@ -60,23 +60,24 @@ pb3v as tProgressBarBoxState[]
   ProgressBarBox_SetColor( pb3v[1], 0, 255, 0 )
   ProgressBarBox_SetColor( pb3v[2], 0, 0, 255 )
 
-do
-  progress = progress + increment
-  if progress >= 300 or progress <= 0 then increment = -increment
-  
-  ProgressBarBox_Update( pb, progress )
-  ProgressBarBox_Update( pbv, progress )
-  ProgressBarBox_UpdatePercent( pb2, 100 * progress / 300.0 )
-  ProgressBarBox_UpdatePercent( pb2v, 100 * progress / 300.0 )
-  
-  for i = 0 to pb3.length
-    ProgressBarBox_UpdateFraction( pb3[i], progress / 300.0 )
-  next i
+  do
+    progress = progress + increment
+    if progress >= 300 or progress <= 0 then increment = -increment
 
-  for i = 0 to pb3v.length
-    ProgressBarBox_UpdateFraction( pb3v[i], progress / 300.0 )
-  next i
+    ProgressBarBox_Update( pb, progress )
+    ProgressBarBox_Update( pbv, progress )
+    ProgressBarBox_UpdatePercent( pb2, 100 * progress / 300.0 )
+    ProgressBarBox_UpdatePercent( pb2v, 100 * progress / 300.0 )
 
-  Print( ScreenFPS() )
-  Sync()
-loop
+    for i = 0 to pb3.length
+      ProgressBarBox_UpdateFraction( pb3[i], progress / 300.0 )
+    next i
+
+    for i = 0 to pb3v.length
+      ProgressBarBox_UpdateFraction( pb3v[i], progress / 300.0 )
+    next i
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
