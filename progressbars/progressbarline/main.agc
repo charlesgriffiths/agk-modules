@@ -41,17 +41,35 @@ pb3 as tProgressBarLineState[]
   ProgressBarLine_SetColor( pb3[1], 0, 255, 0 )
   ProgressBarLine_SetColor( pb3[2], 0, 0, 255 )
 
-do
-  progress = progress + increment
-  if progress >= 300 or progress <= 0 then increment = -increment
-  
-  ProgressBarLine_Update( pb, progress )
-  ProgressBarLine_UpdatePercent( pb2, 100 * progress / 300.0 )
-  
-  for i = 0 to pb3.length
-    ProgressBarLine_UpdateFraction( pb3[i], progress / 300.0 )
+pbv as tProgressBarLineState[]
+pbvprogress as integer[]
+
+  for i = 0 to 1023
+    pbv.insert( ProgressBarLine_Init( i, 768-256, -128, 256 ))
+    pbvprogress.insert( 0 )
+    ProgressBarLine_SetVertical( pbv[i], 1 )
+    ProgressBarLine_SetColor( pbv[i], mod( i, 256 ), 127 + Random( 0, 128 ), 127 + Random( 0, 128 ))
   next i
 
-  Print( ScreenFPS() )
-  Sync()
-loop
+  do
+    progress = progress + increment
+    if progress >= 300 or progress <= 0 then increment = -increment
+
+    ProgressBarLine_Update( pb, progress )
+    ProgressBarLine_UpdatePercent( pb2, 100 * progress / 300.0 )
+
+    for i = 0 to pb3.length
+      ProgressBarLine_UpdateFraction( pb3[i], progress / 300.0 )
+    next i
+
+    for i = 0 to pbv.length
+      pbvprogress[i] = pbvprogress[i] + (increment * Random( 0, 128 )) / (9 * 128.0)
+      pbv[i].length# = -128
+      if pbvprogress[i] < 0 then pbv[i].length# = 128
+      ProgressBarLine_Update( pbv[i], Abs(pbvprogress[i]) )
+    next i
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
