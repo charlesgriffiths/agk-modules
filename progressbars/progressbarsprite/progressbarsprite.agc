@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/progressbars/progressbarsprite/progressbarsprite.agc
 
 
 type tProgressBarSpriteState
@@ -60,7 +62,7 @@ endfunction pb
 // delete a progressbar
 function ProgressBarSprite_Delete( pb ref as tProgressBarSpriteState )
 
-  if pb.sprite <> 0 then DeleteSprite( pb.sprite )
+  if pb.sprite then DeleteSprite( pb.sprite )
   pb.sprite = 0
 
 endfunction
@@ -81,18 +83,18 @@ function ProgressBarSprite_Update( pb ref as tProgressBarSpriteState, progress a
   width# = pb.width#
   height# = pb.height#
   
-  if pb.bVertical = 0 // horizontal
-    width# = (pb.width# * progress) / pb.maxprogress
-
-    if pb.bDirection <> 0 then barx# = barx# + pb.width# - width#
-    if pb.bAlign <> 0 and pb.bDirection <> 0 then spritex# = spritex# + pb.width# - width#
-    if pb.bAlign <> 0 and pb.bDirection = 0 then spritex# = spritex# - pb.width# + width#
-  else // vertical
+  if pb.bVertical // vertical
     height# = (pb.height# * progress) / pb.maxprogress
 
-    if pb.bDirection <> 0 then bary# = bary# + pb.height# - height#
-    if pb.bAlign <> 0 and pb.bDirection <> 0 then spritey# = spritey# + pb.height# - height#
-    if pb.bAlign <> 0 and pb.bDirection = 0 then spritey# = spritey# - pb.height# + height#
+    if pb.bDirection then bary# = bary# + pb.height# - height#
+    if pb.bAlign and pb.bDirection then spritey# = spritey# + pb.height# - height#
+    if pb.bAlign and 0 = pb.bDirection then spritey# = spritey# - pb.height# + height#
+  else // horizontal
+    width# = (pb.width# * progress) / pb.maxprogress
+
+    if pb.bDirection then barx# = barx# + pb.width# - width#
+    if pb.bAlign and pb.bDirection then spritex# = spritex# + pb.width# - width#
+    if pb.bAlign and 0 = pb.bDirection then spritex# = spritex# - pb.width# + width#
   endif
 
   SetSpritePosition( pb.sprite, spritex#, spritey# )
