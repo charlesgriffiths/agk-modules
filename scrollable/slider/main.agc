@@ -87,18 +87,21 @@ text3y as integer
   Slider_SetXFraction( sl3, 0.333 )
   Slider_SetYFraction( sl3, 0.777 )
 
-do
+  do
+    Slider_UpdateMouse( sl )
+    Slider_UpdateMouse( sl2 )
+    Slider_UpdateMouse( sl3 )
 
-  Slider_UpdateMouse( sl )
-  Slider_UpdateMouse( sl2 )
-  Slider_UpdateMouse( sl3 )
+    SetTextString( text, str(Slider_GetX( sl )) + " " + str(Slider_GetXPercent( sl ),1) + "%" )
+    SetTextString( text2, str(Slider_GetY( sl2 )) + " " + str(Slider_GetYPercent( sl2 ),1) + "%" )
+    SetTextString( text3x, "x " + str(Slider_GetX( sl3 )) + " " + str(Slider_GetXPercent( sl3 ),1) + "%" )
+    SetTextString( text3y, "y " + str(Slider_GetY( sl3 )) + " " + str(Slider_GetYPercent( sl3 ),1) + "%" )
 
-  SetTextString( text, str(Slider_GetX( sl )) + " " + str(Slider_GetXPercent( sl ),1) + "%" )
-  SetTextString( text2, str(Slider_GetY( sl2 )) + " " + str(Slider_GetYPercent( sl2 ),1) + "%" )
-  SetTextString( text3x, "x " + str(Slider_GetX( sl3 )) + " " + str(Slider_GetXPercent( sl3 ),1) + "%" )
-  SetTextString( text3y, "y " + str(Slider_GetY( sl3 )) + " " + str(Slider_GetYPercent( sl3 ),1) + "%" )
+    Print( ScreenFPS() )
+    Sync()
+  loop
 
-  Print( ScreenFPS() )
-  Sync()
-loop
+  Slider_Delete( sl )
+  Slider_Delete( sl2 )
+  Slider_Delete( sl3 )
 
