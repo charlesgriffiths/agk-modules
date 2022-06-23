@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/juice/shaker/shaker.agc
 
 
 #constant ShakerModeStill 0
@@ -27,6 +29,7 @@ type tShakeText
   id as integer
   shaking as integer
 endtype
+
 
 type tShakeSprite
   id as integer
@@ -61,6 +64,17 @@ sh as tShakerState
   sh.shakeprogress# = 0
 
 endfunction sh
+
+
+// delete a shaker
+function Shaker_Delete( sh ref as tShakerState )
+
+  if ShakerModeStill <> sh.mode then Shaker_StopShaking( sh )
+
+  sh.texts.length = -1
+  sh.sprites.length = -1
+
+endfunction
 
 
 // add text to be shaken
