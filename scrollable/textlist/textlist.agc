@@ -14,13 +14,16 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
-   
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/scrollable/textlist/textlist.agc
+
 
 type tTextListLine
   text$ as string
   display as integer
   background as integer
 endtype
+
 
 type tTextListState
   x# as float
@@ -82,9 +85,10 @@ endfunction tl
 function TextList_Delete( tl ref as tTextListState )
 
   for i = 0 to tl.list.length
-    if tl.list[i].display <> 0 then DeleteText( tl.list[i].display )
-    if tl.list[i].background <> 0 then DeleteSprite( tl.list[i].background )
+    if tl.list[i].display then DeleteText( tl.list[i].display )
+    if tl.list[i].background then DeleteSprite( tl.list[i].background )
   next i
+
   tl.list.length = -1
   tl.selected.length = -1
   tl.topindex = 0
@@ -133,8 +137,8 @@ endfunction
 function TextList_RemoveLine( tl ref as tTextListState, index as integer )
 
   if index >= 0 and index <= tl.list.length
-    if tl.list[index].display > 0 then DeleteText( tl.list[index].display )
-    if tl.list[index].background > 0 then DeleteSprite( tl.list[index].background )
+    if tl.list[index].display then DeleteText( tl.list[index].display )
+    if tl.list[index].background then DeleteSprite( tl.list[index].background )
     tl.list.remove( index )
     tl.bRedisplay = 1
     if tl.topindex > 0 and tl.topindex >= index then tl.topindex = tl.topindex - 1
@@ -154,7 +158,7 @@ endfunction
 function TextList_ModifyItem( tl ref as tTextListState, index as integer, text$ as string )
 
   tl.list[index].text$ = text$
-  if tl.list[index].display > 0 then DeleteText( tl.list[index].display )
+  if tl.list[index].display then DeleteText( tl.list[index].display )
   tl.list[index].display = 0
   tl.bRedisplay = 1
 
@@ -201,7 +205,7 @@ savedscrolloffset# as float
       if tl.bClickToSelect <> 0
         for i = tl.topindex to tl.list.length
           if tl.list[i].display > 0
-            if GetTextHitTest( tl.list[i].display, 1+tl.x#, y# ) > 0
+            if 1 = GetTextHitTest( tl.list[i].display, 1+tl.x#, y# )
               updated = 1
               if TextList_GetSelected( tl, i )
                 TextList_ClearSelected( tl, i )
@@ -326,7 +330,7 @@ endfunction updated or savedscrolloffset# <> tl.scrolloffset# or savedtopindex <
 // internal. make a text line ready to display
 function TextList_SetDisplayLine( tl ref as tTextListState, line as integer )
 
-  if tl.list[line].display = 0
+  if 0 = tl.list[line].display
     tl.list[line].display = CreateText( tl.list[line].text$ )
     SetTextDepth( tl.list[line].display, tl.textdepth )
     SetTextSize( tl.list[line].display, tl.textsize )
@@ -366,10 +370,9 @@ endfunction
 function TextList_ClearSelected( tl ref as tTextListState, index as integer )
 
   if index >= 0 and index <= tl.list.length
-    if tl.list[index].background > 0
-      DeleteSprite( tl.list[index].background )
-      tl.list[index].background = 0
-    endif
+    if tl.list[index].background then DeleteSprite( tl.list[index].background )
+    tl.list[index].background = 0
+
     for i = tl.selected.length to 0 step -1
       if index = tl.selected[i] then tl.selected.remove( i )
     next i
@@ -409,8 +412,8 @@ function TextList_SetDepth( tl ref as tTextListState, depth as integer )
 
   tl.textdepth = depth
   for i = 0 to tl.list.length
-    if tl.list[i].display > 0 then SetTextDepth( tl.list[i].display, depth )
-    if tl.list[i].background > 0 then SetSpriteDepth( tl.list[i].background, depth+1 )
+    if tl.list[i].display then SetTextDepth( tl.list[i].display, depth )
+    if tl.list[i].background then SetSpriteDepth( tl.list[i].background, depth+1 )
   next i
 
 endfunction
@@ -421,7 +424,7 @@ function TextList_SetSize( tl ref as tTextListState, size as integer )
 
   tl.textsize = size
   for i = 0 to tl.list.length
-    if tl.list[i].display > 0 then SetTextSize( tl.list[i].display, tl.textsize )
+    if tl.list[i].display then SetTextSize( tl.list[i].display, tl.textsize )
   next i
   tl.bRedisplay = 1
 
@@ -433,7 +436,7 @@ function TextList_SetSpacing( tl ref as tTextListState, spacing# as float )
 
   tl.spacing# = spacing#
   for i = 0 to tl.list.length
-    if tl.list[i].display > 0 then SetTextLineSpacing( tl.list[i].display, tl.spacing# )
+    if tl.list[i].display then SetTextLineSpacing( tl.list[i].display, tl.spacing# )
   next i
   tl.bRedisplay = 1
 
@@ -453,15 +456,12 @@ function TextList_SetVisible( tl ref as tTextListState, bVisible as integer )
   tl.bRedisplay = bVisible
   TextList_SetActive( tl, bVisible )
 
-  if bVisible = 0
+  if 0 = bVisible
     for i = 0 to tl.list.length
-      if tl.list[i].display > 0
-        DeleteText( tl.list[i].display )
-        tl.list[i].display = 0
-      endif
-      if tl.list[i].background > 0
-        SetSpriteVisible( tl.list[i].background, 0 )
-      endif
+      if tl.list[i].display then DeleteText( tl.list[i].display )
+      tl.list[i].display = 0
+
+      if tl.list[i].background then SetSpriteVisible( tl.list[i].background, 0 )
     next i
   endif
 
