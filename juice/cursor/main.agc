@@ -117,23 +117,32 @@ c8 as tCursorState
   SetTextPosition( text, 555, 530 )
 
 
-
   DeleteSprite( sprite )
 
 //  Cursor_SetVisible( c6, 0 )
 //  Cursor_SetActive( c5, 0 )
 
-do
-  Cursor_Update( c )
-  Cursor_Update( c2 )
-  Cursor_Update( c3 )
-  Cursor_Update( c4 )
-  Cursor_Update( c5 )
-  Cursor_Update( c6 )
-  Cursor_Update( c7 )
-  Cursor_Update( c8 )
+  do
+    Cursor_Update( c )
+    Cursor_Update( c2 )
+    Cursor_Update( c3 )
+    Cursor_Update( c4 )
+    Cursor_Update( c5 )
+    Cursor_Update( c6 )
+    Cursor_Update( c7 )
+    Cursor_Update( c8 )
 
-  UpdateAllTweens(GetFrameTime())
-  Print( ScreenFPS() )
-  Sync()
-loop
+    UpdateAllTweens( GetFrameTime())
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
+  Cursor_Delete( c )
+  Cursor_Delete( c2 )
+  Cursor_Delete( c3 )
+  Cursor_Delete( c4 )
+  Cursor_Delete( c5 )
+  Cursor_Delete( c6 )
+  Cursor_Delete( c7 )
+  Cursor_Delete( c8 )
+
