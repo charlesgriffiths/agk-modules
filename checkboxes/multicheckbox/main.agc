@@ -50,10 +50,12 @@ sprites as integer[]
   SetTextPosition( text, 165, 384 )
   SetTextSize( text, 50 )
 
-do
-    Print( ScreenFPS() )
-    
+  do
     MultiCheckBox_UpdateMouse( mc )
+
+    Print( ScreenFPS() )
     Sync()
-loop
+  loop
+
+  MultiCheckBox_Delete( mc )
 
