@@ -14,13 +14,15 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/checkboxes/multicheckbox/multicheckbox.agc
 
 
 type tMultiCheckBoxState
+  sprites as integer[]
+
   selected as integer
   bActive as integer
-
-  sprites as integer[]
 endtype
 
 
@@ -47,9 +49,10 @@ endfunction mc
 function MultiCheckBox_Delete( mc ref as tMultiCheckBoxState )
 
   for i = 0 to mc.sprites.length
-    if mc.sprites[i] > 0 then DeleteSprite( mc.sprites[i] )
+    if mc.sprites[i] then DeleteSprite( mc.sprites[i] )
     mc.sprites[i] = 0
   next i
+  mc.sprites.length = -1
 
 endfunction
 
@@ -100,7 +103,7 @@ function MultiCheckBox_Update( mc ref as tMultiCheckBoxState, x# as float, y# as
 selection as integer
 
   selection = mc.selected
-  if released = 1 and mc.bActive <> 0
+  if released and mc.bActive
     if GetSpriteHitTest( mc.sprites[0], x#, y# ) then MultiCheckBox_Increment( mc )
   endif
 
@@ -122,12 +125,12 @@ function MultiCheckBox_SetVisible( mc ref as tMultiCheckBoxState, bVisible as in
 
   MultiCheckBox_SetActive( mc, bVisible )
 
-  if bVisible = 0
+  if bVisible
+    MultiCheckBox_SetState( mc, mc.selected )
+  else
     for i = 0 to mc.sprites.length
       SetSpriteVisible( mc.sprites[i], 0 )
     next i
-  else
-    MultiCheckBox_SetState( mc, mc.selected )
   endif
 
 endfunction
