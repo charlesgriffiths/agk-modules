@@ -42,28 +42,32 @@ tl as tTextListState
 
 //  TextList_Delete( tl )
 
-do
-  TextList_DrawOutline( tl, MakeColor( 255, 255, 255 ))
-  TextList_UpdateMouse( tl )
+
+  do
+    TextList_DrawOutline( tl, MakeColor( 255, 255, 255 ))
+    TextList_UpdateMouse( tl )
 tl.bRedisplay = 1  // may need to redisplay when window is resized
 
-  if TextList_GetSelected( tl, 1 )
-    print( "index 1 is selected" )
-  else
-    print( "index 1 is not selected" )
-  endif
+    if TextList_GetSelected( tl, 1 )
+      print( "index 1 is selected" )
+    else
+      print( "index 1 is not selected" )
+    endif
 
-  if TextList_GetSelected( tl, 2 )
-    print( "index 2 is selected" )
-  else
-    print( "index 2 is not selected" )
-  endif
-  print( "selected: " + intarraytostring( tl.selected ) )
+    if TextList_GetSelected( tl, 2 )
+      print( "index 2 is selected" )
+    else
+      print( "index 2 is not selected" )
+    endif
+    print( "selected: " + intarraytostring( tl.selected ) )
 
-  Print( ScreenFPS() )
-  Print( str(tl.topindex) + " " + str( tl.scrolloffset# ) + " " + str( tl.bScrollingUp ) + " " + str( tl.bShowLastLine ))
-  Sync()
-loop
+
+    Print( ScreenFPS() )
+    Print( str(tl.topindex) + " " + str( tl.scrolloffset# ) + " " + str( tl.bScrollingUp ) + " " + str( tl.bShowLastLine ))
+    Sync()
+  loop
+
+  TextList_Delete( tl )
 
 
 function intarraytostring( ints as integer[] )
