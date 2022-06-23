@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/scrollable/spritelist/spritelist.agc
 
 
 type tSpriteListState
@@ -73,7 +75,7 @@ endfunction sl
 function SpriteList_Delete( sl ref as tSpriteListState )
 
   for i = 0 to sl.list.length
-    if sl.list[i] <> 0 then DeleteSprite( sl.list[i] )
+    if sl.list[i] then DeleteSprite( sl.list[i] )
   next i
   sl.list.length = -1
   sl.selected.length = -1
@@ -138,7 +140,7 @@ endfunction
 // modify a sprite
 function SpriteList_ModifyItem( sl ref as tSpriteListState, index as integer, sprite as integer )
 
-  if sl.list[index] <> 0 then DeleteSprite( sl.list[index] )
+  if sl.list[index] then DeleteSprite( sl.list[index] )
   sl.list[index] = sprite
   sl.bRedisplay = 1
 
@@ -182,7 +184,7 @@ savedscrolloffset# as float
       sl.mousedownmove# = sl.mousedownmove# + Abs( x# - sl.mousedownx# ) + Abs( y# - sl.mousedowny# )
     elseif released > 0 and sl.mousedownmove# < 50
     // click
-      if sl.bClickToSelect <> 0
+      if sl.bClickToSelect
         for i = sl.topindex to sl.list.length
           if GetSpriteVisible( sl.list[i] )
             if GetSpriteHitTest( sl.list[i], 1+sl.x#, y# ) > 0
