@@ -14,18 +14,21 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/progressbars/progressbarline/progressbarline.agc
 
 
 type tProgressBarLineState
   x# as float
   y# as float
   length# as float
-  bVisible as integer
-  bVertical as integer
   red as integer
   green as integer
   blue as integer
   maxprogress as integer
+
+  bVisible as integer
+  bVertical as integer
 endtype
 
 
@@ -56,11 +59,11 @@ function ProgressBarLine_Update( pb ref as tProgressBarLineState, progress as in
   if progress < 0 then progress = 0
   if progress > pb.maxprogress then progress = pb.maxprogress
 
-  if pb.bVisible <> 0 
-    if pb.bVertical = 0
-      DrawLine( pb.x#, pb.y#, pb.x# + (progress * pb.length#)/pb.maxprogress, pb.y#, pb.red, pb.green, pb.blue )
-    else
+  if pb.bVisible
+    if pb.bVertical
       DrawLine( pb.x#, pb.y#, pb.x#, pb.y# + (progress * pb.length#)/pb.maxprogress, pb.red, pb.green, pb.blue )
+    else
+      DrawLine( pb.x#, pb.y#, pb.x# + (progress * pb.length#)/pb.maxprogress, pb.y#, pb.red, pb.green, pb.blue )
     endif
   endif
 endfunction
