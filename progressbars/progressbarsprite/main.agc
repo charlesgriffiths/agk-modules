@@ -113,44 +113,54 @@ pbv4 as tProgressBarSpriteState
 
   SetPrintColor( 255, 255, 255 )
 
-do
-  progress = progress + increment
-  if progress >= 300 or progress <= 0 then increment = -increment
-  
-  ProgressBarSprite_Update( pb, progress )
-  ProgressBarSprite_Update( pb2, progress )
-  ProgressBarSprite_Update( pb3, progress )
-  ProgressBarSprite_Update( pb4, progress )
-  ProgressBarSprite_Update( pbv, progress )
-  ProgressBarSprite_Update( pbv2, progress )
-  ProgressBarSprite_Update( pbv3, progress )
-  ProgressBarSprite_Update( pbv4, progress )
+  do
+    progress = progress + increment
+    if progress >= 300 or progress <= 0 then increment = -increment
 
-  color = MakeColor( 255, 0, 0 )
-  ProgressBarSprite_DrawOutline( pb, color )
-  ProgressBarSprite_DrawOutline( pb2, color )
-  ProgressBarSprite_DrawOutline( pb3, color )
-  ProgressBarSprite_DrawOutline( pb4, color )
-  ProgressBarSprite_DrawOutline( pbv, color )
-  ProgressBarSprite_DrawOutline( pbv2, color )
-  ProgressBarSprite_DrawOutline( pbv3, color )
-  ProgressBarSprite_DrawOutline( pbv4, color )
-  
+    ProgressBarSprite_Update( pb, progress )
+    ProgressBarSprite_Update( pb2, progress )
+    ProgressBarSprite_Update( pb3, progress )
+    ProgressBarSprite_Update( pb4, progress )
+    ProgressBarSprite_Update( pbv, progress )
+    ProgressBarSprite_Update( pbv2, progress )
+    ProgressBarSprite_Update( pbv3, progress )
+    ProgressBarSprite_Update( pbv4, progress )
 
-  SetSpritePosition( progresssprite, 100, 200 )
-  x# = GetSpriteX( progresssprite )
-  y# = GetSpriteY( progresssprite )
-  color = MakeColor( 255, 0, 0 )
-  DrawBox( x#, y#, x#+GetSpriteWidth( progresssprite ), y#+GetSpriteHeight( progresssprite ), color, color, color, color, 0 )
-
-  SetSpritePosition( vprogresssprite, 100, 384 )
-  x# = GetSpriteX( vprogresssprite )
-  y# = GetSpriteY( vprogresssprite )
-  color = MakeColor( 255, 0, 0 )
-  DrawBox( x#, y#, x#+GetSpriteWidth( vprogresssprite ), y#+GetSpriteHeight( vprogresssprite ), color, color, color, color, 0 )
+    color = MakeColor( 255, 0, 0 )
+    ProgressBarSprite_DrawOutline( pb, color )
+    ProgressBarSprite_DrawOutline( pb2, color )
+    ProgressBarSprite_DrawOutline( pb3, color )
+    ProgressBarSprite_DrawOutline( pb4, color )
+    ProgressBarSprite_DrawOutline( pbv, color )
+    ProgressBarSprite_DrawOutline( pbv2, color )
+    ProgressBarSprite_DrawOutline( pbv3, color )
+    ProgressBarSprite_DrawOutline( pbv4, color )
 
 
-  Print( ScreenFPS() )
+    SetSpritePosition( progresssprite, 100, 200 )
+    x# = GetSpriteX( progresssprite )
+    y# = GetSpriteY( progresssprite )
+    color = MakeColor( 255, 0, 0 )
+    DrawBox( x#, y#, x#+GetSpriteWidth( progresssprite ), y#+GetSpriteHeight( progresssprite ), color, color, color, color, 0 )
+
+    SetSpritePosition( vprogresssprite, 100, 384 )
+    x# = GetSpriteX( vprogresssprite )
+    y# = GetSpriteY( vprogresssprite )
+    color = MakeColor( 255, 0, 0 )
+    DrawBox( x#, y#, x#+GetSpriteWidth( vprogresssprite ), y#+GetSpriteHeight( vprogresssprite ), color, color, color, color, 0 )
+
+
+    Print( ScreenFPS() )
 //  Print( "Textwidth: " + str( textwidth# ))
-  Sync()
-loop
+    Sync()
+  loop
+
+  ProgressBarSprite_Delete( pb )
+  ProgressBarSprite_Delete( pb2 )
+  ProgressBarSprite_Delete( pb3 )
+  ProgressBarSprite_Delete( pb4 )
+  ProgressBarSprite_Delete( pbv )
+  ProgressBarSprite_Delete( pbv2 )
+  ProgressBarSprite_Delete( pbv3 )
+  ProgressBarSprite_Delete( pbv4 )
+
