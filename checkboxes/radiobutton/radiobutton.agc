@@ -14,15 +14,17 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/checkboxes/radiobutton/radiobutton.agc
 
 
 type tRadioButtonState
+  selectedsprite as integer
+  unselectedsprites as integer[]
+
   selected as integer
   bActive as integer
   bAllowUnselect as integer
-
-  selectedsprite as integer
-  unselectedsprites as integer[]
 endtype
 
 
@@ -53,13 +55,14 @@ endfunction rb
 // delete the radiobutton
 function RadioButton_Delete( rb ref as tRadioButtonState )
 
-  if rb.selectedsprite > 0 then DeleteSprite( rb.selectedsprite )
+  if rb.selectedsprite then DeleteSprite( rb.selectedsprite )
   rb.selectedsprite = 0
 
   for i = 0 to rb.unselectedsprites.length
-    if rb.unselectedsprites[i] > 0 then DeleteSprite( rb.unselectedsprites[i] )
+    if rb.unselectedsprites[i] then DeleteSprite( rb.unselectedsprites[i] )
     rb.unselectedsprites[i] = 0
   next i
+  rb.unselectedsprites.length = -1
 
 endfunction
 
@@ -73,7 +76,7 @@ endfunction
 // set the selected state of the radiobutton
 function RadioButton_SetState( rb ref as tRadioButtonState, selected as integer )
 
-  if selected < 0 and rb.bAllowUnselect <> 0 and rb.selected >= 0
+  if selected < 0 and rb.bAllowUnselect and rb.selected >= 0
     SetSpriteVisible( rb.unselectedsprites[rb.selected], 1 )
     SetSpriteVisible( rb.selectedsprite, 0 )
     rb.selected = -1
@@ -126,7 +129,7 @@ function RadioButton_Update( rb ref as tRadioButtonState, x# as float, y# as flo
 selected as integer
 
   selected = rb.selected
-  if released = 1 and rb.bActive <> 0
+  if released and rb.bActive
     for i = 0 to rb.unselectedsprites.length
       if GetSpriteHitTest( rb.unselectedsprites[i], x#, y# )
         if rb.bAllowUnselect and i = rb.selected
@@ -158,16 +161,16 @@ function RadioButton_SetVisible( rb ref as tRadioButtonState, bVisible as intege
 
   RadioButton_SetActive( rb, bVisible )
 
-  if bVisible = 0
-    for i = 0 to rb.unselectedsprites.length
-      SetSpriteVisible( rb.unselectedsprites[i], 0 )
-    next i
-    SetSpriteVisible( rb.selectedsprite, 0 )
-  else
+  if bVisible
     for i = 0 to rb.unselectedsprites.length
       SetSpriteVisible( rb.unselectedsprites[i], 1 )
     next i
     RadioButton_SetState( rb, rb.selected )
+  else
+    for i = 0 to rb.unselectedsprites.length
+      SetSpriteVisible( rb.unselectedsprites[i], 0 )
+    next i
+    SetSpriteVisible( rb.selectedsprite, 0 )
   endif
 
 endfunction
