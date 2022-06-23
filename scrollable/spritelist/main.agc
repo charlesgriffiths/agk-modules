@@ -43,28 +43,35 @@ sl3 as tSpriteListState
   next i
 
   sl2.topindex = 0
-  
+
   SpriteList_AppendSprite( sl3, sprite )
+
+//  SpriteList_SetActive( sl2, 0 )
+//  SpriteList_SetVisible( sl3, 0 )
   
 do
-
-  SpriteList_UpdateMouse( sl )
-  SpriteList_UpdateMouse( sl2 )
-  SpriteList_UpdateMouse( sl3 )
-
-  
-  color = MakeColor( 255, 0, 0 )
-  SpriteList_DrawOutline( sl, color )
-  SpriteList_DrawOutline( sl2, color )
-  SpriteList_DrawOutline( sl3, color )
-
-  SetSpritePosition( sprite, 100, 200 )
-  x# = GetSpriteX( sprite )
-  y# = GetSpriteY( sprite )
-  color = MakeColor( 255, 0, 0 )
-  DrawBox( x#, y#, x#+GetSpriteWidth( sprite ), y#+GetSpriteHeight( sprite ), color, color, color, color, 0 )
+    SpriteList_UpdateMouse( sl )
+    SpriteList_UpdateMouse( sl2 )
+    SpriteList_UpdateMouse( sl3 )
 
 
-  Print( ScreenFPS() )
-  Sync()
-loop
+    color = MakeColor( 255, 0, 0 )
+    SpriteList_DrawOutline( sl, color )
+    SpriteList_DrawOutline( sl2, color )
+    SpriteList_DrawOutline( sl3, color )
+
+    SetSpritePosition( sprite, 100, 200 )
+    x# = GetSpriteX( sprite )
+    y# = GetSpriteY( sprite )
+    color = MakeColor( 255, 0, 0 )
+    DrawBox( x#, y#, x#+GetSpriteWidth( sprite ), y#+GetSpriteHeight( sprite ), color, color, color, color, 0 )
+
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
+  SpriteList_Delete( sl )
+  SpriteList_Delete( sl2 )
+  SpriteList_Delete( sl3 )
+
