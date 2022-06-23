@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/menus/textchoice/textchoice.agc
 
 
 type tTextChoiceItem
@@ -96,7 +98,7 @@ endfunction
 function TextChoice_ClearChoices( tc ref as tTextChoiceState )
 
   for i = 0 to tc.items.length
-    if 0 <> tc.items[i].text then DeleteText( tc.items[i].text )
+    if tc.items[i].text then DeleteText( tc.items[i].text )
   next i
   tc.items.length = -1
   tc.selected.length = -1
@@ -226,9 +228,9 @@ endfunction
 // restrict selection count to a maximum of one
 function TextChoice_SetSelectOnlyOne( tc ref as tTextChoiceState, bValue as integer )
 
-  if 0 = bValue
-    tc.bSelectOnlyOne = 0
-  else
+  tc.bSelectOnlyOne = bValue
+
+  if bValue
     if tc.selected.length > 0
       for i = 0 to tc.items.length
         if i <> tc.selected[0] then TextChoice_SetUnselected( tc, i )
