@@ -64,11 +64,11 @@ sh as tShakerState
   Shaker_ShakeSeparately( sh )
 //  Shaker_ShakeScreen( sh )
 
-do
-  Shaker_Update( sh )
+  do
+    Shaker_Update( sh )
 
-  Print( str(sh.distance) + "  " + str(sh.seconds#,2) + "  " + str(sh.frequency#,2) + "  " + str(sh.shakeprogress#,2))
-  Print( ScreenFPS() )
-  Sync()
-loop
+    Print( str(sh.distance) + "  " + str(sh.seconds#,2) + "  " + str(sh.frequency#,2) + "  " + str(sh.shakeprogress#,2))
+    Print( ScreenFPS() )
+    Sync()
+  loop
 
