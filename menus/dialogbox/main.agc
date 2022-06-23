@@ -63,11 +63,12 @@ db2 as tDialogBoxState
   DialogBox_Delete( db )
   DialogBox_Delete( db2 )
 
-do
-  // choices are returned from DialogBox_Display() and retained in .choice
-  Print( "First choice index: " + str( db.choice ))
-  Print( "Second choice index: " + str( db2.choice ))
-  Print( ScreenFPS() )
-  Sync()
-loop
+  do
+    // choices are returned from DialogBox_Display() and retained in .choice
+    Print( "First choice index: " + str( db.choice ))
+    Print( "Second choice index: " + str( db2.choice ))
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
 
