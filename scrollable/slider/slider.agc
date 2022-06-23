@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/scrollable/slider/slider.agc
 
 
 type tSliderState
@@ -46,11 +48,12 @@ ss as tSliderState
 endfunction ss
 
 
+// delete a slider
 function Slider_Delete( ss ref as tSliderState )
 
-  if ss.surface <> 0 then DeleteSprite( ss.surface )
+  if ss.surface then DeleteSprite( ss.surface )
   ss.surface = 0
-  if ss.pin <> 0 then DeleteSprite( ss.pin )
+  if ss.pin then DeleteSprite( ss.pin )
   ss.pin = 0
 
 endfunction
@@ -159,23 +162,23 @@ endfunction updated
 function Slider_Update( ss ref as tSliderState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
 updated as integer = 0
 
-  if 0 = ss.bVisible or 0 = ss.bActive then exitfunction updated
+  if ss.bVisible and ss.bActive
+    pinx# = GetSpriteX( ss.pin )
+    piny# = GetSpriteY( ss.pin )
 
-  pinx# = GetSpriteX( ss.pin )
-  piny# = GetSpriteY( ss.pin )
+    if GetSpriteHitTest( ss.surface, x#, y# ) and state
+      xmin# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.pin ) / 2
+      if x# < xmin# then x# = xmin#
+      ymin# = GetSpriteY( ss.surface ) + GetSpriteHeight( ss.pin ) / 2
+      if y# < ymin# then y# = ymin#
+      xmax# = xmin# + GetSpriteWidth( ss.surface ) - GetSpriteWidth( ss.pin )
+      if x# > xmax# then x# = xmax#
+      ymax# = ymin# + GetSpriteHeight( ss.surface ) - GetSpriteHeight( ss.pin )
+      if y# > ymax# then y# = ymax#
 
-  if GetSpriteHitTest( ss.surface, x#, y# ) and state
-    xmin# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.pin ) / 2
-    if x# < xmin# then x# = xmin#
-    ymin# = GetSpriteY( ss.surface ) + GetSpriteHeight( ss.pin ) / 2
-    if y# < ymin# then y# = ymin#
-    xmax# = xmin# + GetSpriteWidth( ss.surface ) - GetSpriteWidth( ss.pin )
-    if x# > xmax# then x# = xmax#
-    ymax# = ymin# + GetSpriteHeight( ss.surface ) - GetSpriteHeight( ss.pin )
-    if y# > ymax# then y# = ymax#
-
-    SetSpritePositionByOffset( ss.pin, x#, y# )
-    updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
+      SetSpritePositionByOffset( ss.pin, x#, y# )
+      updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
+    endif
   endif
 
 endfunction updated
