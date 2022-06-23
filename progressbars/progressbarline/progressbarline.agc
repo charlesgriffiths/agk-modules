@@ -25,6 +25,7 @@ type tProgressBarLineState
   red as integer
   green as integer
   blue as integer
+  progress as integer
   maxprogress as integer
 
   bVisible as integer
@@ -42,6 +43,7 @@ pb as tProgressBarLineState
   pb.x# = x#
   pb.y# = y#
   pb.length# = length#
+  pb.progress = 0
   pb.maxprogress = maxprogress
 
   pb.bVisible = 1
@@ -66,7 +68,11 @@ function ProgressBarLine_Update( pb ref as tProgressBarLineState, progress as in
       DrawLine( pb.x#, pb.y#, pb.x# + (progress * pb.length#)/pb.maxprogress, pb.y#, pb.red, pb.green, pb.blue )
     endif
   endif
-endfunction
+  
+  updated = progress <> pb.progress
+  pb.progress = progress
+
+endfunction updated
 
 
 function ProgressBarLine_UpdatePercent( pb ref as tProgressBarLineState, percent# as float )
