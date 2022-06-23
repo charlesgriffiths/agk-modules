@@ -14,29 +14,30 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/checkboxes/checkbox/checkbox.agc
 
 
 #constant CheckBox_Uncheck 0
 #constant CheckBox_Check 1
 
 
-
 type tCheckBoxState
-  checked as integer
-  bActive as integer
-
   checkedsprite as integer
   uncheckedsprite as integer
+
+  checked as integer
+  bActive as integer
 endtype
 
 
 
 // initialize the state of a checkbox instance
-function CheckBox_Init( x# as float, y# as float, check as integer, uncheck as integer )
+function CheckBox_Init( x# as float, y# as float, checkedsprite as integer, uncheckedsprite as integer )
 cb as tCheckBoxState
 
-  cb.checkedsprite = CloneSprite( check )
-  cb.uncheckedsprite = CloneSprite( uncheck )
+  cb.checkedsprite = CloneSprite( checkedsprite )
+  cb.uncheckedsprite = CloneSprite( uncheckedsprite )
 
   SetSpritePosition( cb.checkedsprite, x#, y# )
   SetSpritePosition( cb.uncheckedsprite, x#, y# )
@@ -50,15 +51,11 @@ endfunction cb
 // delete the checkbox
 function CheckBox_Delete( cb ref as tCheckBoxState )
 
-  if cb.checkedsprite > 0
-    DeleteSprite( cb.checkedsprite )
-    cb.checkedsprite = 0
-  endif
+  if cb.checkedsprite then DeleteSprite( cb.checkedsprite )
+  cb.checkedsprite = 0
 
-  if cb.uncheckedsprite > 0
-    DeleteSprite( cb.uncheckedsprite )
-    cb.uncheckedsprite = 0
-  endif
+  if cb.uncheckedsprite then DeleteSprite( cb.uncheckedsprite )
+  cb.uncheckedsprite = 0
 
 endfunction
 
@@ -66,7 +63,7 @@ endfunction
 // set the checked/unchecked state of the checkbox
 function CheckBox_SetState( cb ref as tCheckBoxState, bChecked as integer )
 
-  if bChecked = CheckBox_Uncheck
+  if CheckBox_Uncheck = bChecked
     SetSpriteVisible( cb.checkedsprite, 0 )
     SetSpriteVisible( cb.uncheckedsprite, 1 )
     cb.checked = CheckBox_Uncheck
@@ -94,9 +91,9 @@ endfunction changed
 function CheckBox_Update( cb ref as tCheckBoxState, x# as float, y# as float, pressed as integer, released as integer, state as integer )
 state = cb.checked
 
-  if released = 1 and cb.bActive <> 0
+  if released and cb.bActive
     if GetSpriteHitTest( cb.checkedsprite, x#, y# )
-      if cb.checked = CheckBox_Uncheck
+      if CheckBox_Uncheck = cb.checked
         CheckBox_SetState( cb, CheckBox_Check )
       else
         CheckBox_SetState( cb, CheckBox_Uncheck )
@@ -121,11 +118,11 @@ function CheckBox_SetVisible( cb ref as tCheckBoxState, bVisible as integer )
 
   CheckBox_SetActive( cb, bVisible )
 
-  if bVisible = 0
+  if bVisible
+    CheckBox_SetState( cb, cb.checked )
+  else
     SetSpriteVisible( cb.checkedsprite, 0 )
     SetSpriteVisible( cb.uncheckedsprite, 0 )
-  else
-    CheckBox_SetState( cb, cb.checked )
   endif
 
 endfunction
