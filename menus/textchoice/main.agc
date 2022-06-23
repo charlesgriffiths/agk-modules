@@ -59,15 +59,18 @@ tc2 as tTextChoiceState
 //  TextChoice_ClearChoices( tc2 )
 
 
-do
-  TextChoice_UpdateMouse( tc )
-  TextChoice_UpdateMouse( tc2 )
+  do
+    TextChoice_UpdateMouse( tc )
+    TextChoice_UpdateMouse( tc2 )
 
-  Print( ScreenFPS() )
-  Print( intarraytostring( tc.selected ))
-  Print( intarraytostring( tc2.selected ))
-  Sync()
-loop
+    Print( ScreenFPS() )
+    Print( intarraytostring( tc.selected ))
+    Print( intarraytostring( tc2.selected ))
+    Sync()
+  loop
+
+  TextChoice_Delete( tc )
+  TextChoice_Delete( tc2 )
 
 
 function intarraytostring( arr as integer[] )
