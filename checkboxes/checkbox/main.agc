@@ -39,15 +39,17 @@ uncheck as integer
   SetTextPosition( text, 165, 384 )
   SetTextSize( text, 50 )
 
-do
-  if CheckBox_Uncheck = CheckBox_GetState( cb )
-    SetTextString( text, "Check this box." )
-  else
-    SetTextString( text, "Good job!" )
-  endif
+  do
+    if CheckBox_Uncheck = CheckBox_GetState( cb )
+      SetTextString( text, "Check this box." )
+    else
+      SetTextString( text, "Good job!" )
+    endif
 
-  Print( ScreenFPS() )
-    
-  CheckBox_UpdateMouse( cb )
-  Sync()
-loop
+    CheckBox_UpdateMouse( cb )
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
+  CheckBox_Delete( cb )
+
