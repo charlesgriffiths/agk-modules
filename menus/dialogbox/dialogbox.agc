@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/menus/dialogbox/dialogbox.agc
 
 
 type tDialogBoxPrompt
@@ -46,6 +48,7 @@ type tDialogBoxState
 endtype
 
 
+
 // initialize the state of a dialogbox instance
 function DialogBox_Init( x# as float, y# as float, width# as float, height# as float, bgcolor as integer, bgsprite as integer )
 db as tDialogBoxState
@@ -57,7 +60,7 @@ db as tDialogBoxState
   db.bgcolor = bgcolor
 
   db.bgsprite = 0
-  if 0 <> bgsprite
+  if bgsprite
     db.bgsprite = CloneSprite( bgsprite )
     SetSpriteVisible( db.bgsprite, 0 )
   endif
@@ -75,18 +78,18 @@ endfunction db
 // delete a dialogbox
 function DialogBox_Delete( db ref as tDialogBoxState )
 
-  if 0 <> db.bgsprite then DeleteSprite( db.bgsprite )
+  if db.bgsprite then DeleteSprite( db.bgsprite )
   db.bgsprite = 0
 
   for i = 0 to db.prompts.length
-    if 0 <> db.prompts[i].sprite then DeleteSprite( db.prompts[i].sprite )
-    if 0 <> db.prompts[i].text then DeleteText( db.prompts[i].text )
+    if db.prompts[i].sprite then DeleteSprite( db.prompts[i].sprite )
+    if db.prompts[i].text then DeleteText( db.prompts[i].text )
   next i
   db.prompts.length = -1
 
   for i = 0 to db.choices.length
-    if 0 <> db.choices[i].sprite then DeleteSprite( db.choices[i].sprite )
-    if 0 <> db.choices[i].text then DeleteText( db.choices[i].text )
+    if db.choices[i].sprite then DeleteSprite( db.choices[i].sprite )
+    if db.choices[i].text then DeleteText( db.choices[i].text )
   next i
   db.choices.length = -1
 
@@ -95,7 +98,13 @@ endfunction
 
 // set hovered choice text to bold or not
 function DialogBox_SetBoldHoverText( db ref as tDialogBoxState, bBoldHoverText as integer )
+
   db.bBoldHoverText = bBoldHoverText
+
+  for i = 0 to db.choices.length
+    if db.choices[i].text then SetTextBold( db.choices[i].text, 0 )
+  next i
+
 endfunction
 
 
@@ -150,10 +159,9 @@ dbp as tDialogBoxPrompt
   dbp.prompt$ = prompt$
   dbp.textsize# = textsize#
   dbp.color = textcolor
+  dbp.sprite = 0
 
-  if 0 = sprite
-    dbp.sprite = 0
-  else
+  if sprite
     dbp.sprite = CloneSprite( sprite )
     SetSpriteDepth( dbp.sprite, 1 )
     SetSpriteVisible( dbp.sprite, 0 )
@@ -178,12 +186,12 @@ defaultok as integer = 0
   FixSpriteToScreen( shade, 1 )
   SetSpriteDepth( shade, 3 )
 
-  if 0 = db.bgsprite
-    bg = CreateSprite( 0 )
-    SetSpriteColor( bg, GetColorRed( db.bgcolor ), GetColorGreen( db.bgcolor ), GetColorBlue( db.bgcolor ), 255 )
-  else
+  if db.bgsprite
     bg = CloneSprite( db.bgsprite )
     SetSpriteVisible( bg, 1 )
+  else
+    bg = CreateSprite( 0 )
+    SetSpriteColor( bg, GetColorRed( db.bgcolor ), GetColorGreen( db.bgcolor ), GetColorBlue( db.bgcolor ), 255 )
   endif
   SetSpriteSize( bg, db.width#, db.height# )
   SetSpritePosition( bg, db.x#, db.y# )
@@ -208,24 +216,23 @@ defaultok as integer = 0
     y# = ScreenToWorldY( GetPointerY())
     if GetPointerReleased()
       for i = 0 to db.choices.length
-        SetTextBold( db.choices[i].text, 0 )
-        if 0 <> db.choices[i].sprite
+        if db.choices[i].sprite
           if GetSpriteHitTest( db.choices[i].sprite , x#, y# )
             db.choice = i
             exit
           endif
         endif
-        if 0 <> db.choices[i].text
+        if db.choices[i].text
           if GetTextHitTest( db.choices[i].text, x#, y# )
             db.choice = i
             exit
           endif
         endif
       next i
+
       if -1 <> db.choice then exit
 
-      if 0 <> defaultok
-        SetTextBold( defaultok, 0 )
+      if defaultok
         if GetTextHitTest( defaultok, x#, y# ) then exit
       endif
     endif
@@ -248,40 +255,32 @@ defaultok as integer = 0
   loop
 
   for i = 0 to db.prompts.length
-    if 0 <> db.prompts[i].text then SetTextVisible( db.prompts[i].text, 0 )
-    if 0 <> db.prompts[i].sprite then SetSpriteVisible( db.prompts[i].sprite, 0 )
+    if db.prompts[i].text then SetTextVisible( db.prompts[i].text, 0 )
+    if db.prompts[i].sprite then SetSpriteVisible( db.prompts[i].sprite, 0 )
   next i
 
   for i = 0 to db.choices.length
-    if 0 <> db.choices[i].text then SetTextVisible( db.choices[i].text, 0 )
-    if 0 <> db.choices[i].sprite then SetSpriteVisible( db.choices[i].sprite, 0 )
+    if db.choices[i].text then SetTextVisible( db.choices[i].text, 0 )
+    if db.choices[i].sprite then SetSpriteVisible( db.choices[i].sprite, 0 )
   next i
 
-  if 0 <> defaultok then DeleteText( defaultok )
+  if defaultok then DeleteText( defaultok )
   DeleteSprite( bg )
   DeleteSprite( shade )
 
 endfunction db.choice
 
 
-// helper function to bold hovered text
+// internal helper function to bold hovered text
 function DialogBox_BoldHoveredText( id as integer, x# as float, y# as float )
-
-  if 0 <> id
-    if GetTextHitTest( id, x#, y# )
-      SetTextBold( id, 1 )
-    else
-      SetTextBold( id, 0 )
-    endif
-  endif
-
+  if id then SetTextBold( id, GetTextHitTest( id, x#, y# ))
 endfunction
 
 
-// helper function to draw a box around a text choice
+// internal helper function to draw a box around a text choice
 function DialogBox_DrawTextBox( id as integer, spacing# as float, color as integer )
 
-  if 0 <> id
+  if id
     x# = GetTextX( id )
     y# = GetTextY( id )
     DrawBox( x# - spacing#, y# - spacing#/2, x# + spacing# + GetTextTotalWidth( id ), y# + spacing# + GetTextTotalHeight( id ), color, color, color, color, 0 )
@@ -294,7 +293,7 @@ endfunction
 function DialogBox_ShowPrompt( db ref as tDialogBoxState, dbps ref as tDialogBoxPrompt[] )
 
   for i = 0 to dbps.length
-    if 0 = dbps[i].text and 1 <> CompareString( "", dbps[i].prompt$ )
+    if 0 = dbps[i].text and 0 = CompareString( "", dbps[i].prompt$ )
       id = CreateText( dbps[i].prompt$ )
       SetTextSize( id, dbps[i].textsize# )
       SetTextColor( id, GetColorRed( dbps[i].color ), GetColorGreen( dbps[i].color ), GetColorBlue( dbps[i].color ), GetColorAlpha( dbps[i].color ))
@@ -308,8 +307,8 @@ function DialogBox_ShowPrompt( db ref as tDialogBoxState, dbps ref as tDialogBox
       dbps[i].text = id
     endif
 
-    if 0 <> dbps[i].text then SetTextVisible( dbps[i].text, 1 )
-    if 0 <> dbps[i].sprite
+    if dbps[i].text then SetTextVisible( dbps[i].text, 1 )
+    if dbps[i].sprite
       SetSpritePosition( dbps[i].sprite, db.x# + dbps[i].x#, db.y# + dbps[i].y# )
       SetSpriteVisible( dbps[i].sprite, 1 )
     endif
