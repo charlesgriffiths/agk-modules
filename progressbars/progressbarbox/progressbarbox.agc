@@ -27,6 +27,7 @@ type tProgressBarBoxState
   color2 as integer
   color3 as integer
   color4 as integer
+  progress as integer
   maxprogress as integer
 
   bVisible as integer
@@ -46,6 +47,7 @@ pb as tProgressBarBoxState
   pb.y# = y#
   pb.width# = width#
   pb.height# = height#
+  pb.progress = 0
   pb.maxprogress = maxprogress
 
   pb.bVisible = 1
@@ -74,7 +76,10 @@ function ProgressBarBox_Update( pb ref as tProgressBarBoxState, progress as inte
     endif
   endif
 
-endfunction
+  updated = progress <> pb.progress
+  pb.progress = progress
+
+endfunction updated
 
 
 function ProgressBarBox_UpdatePercent( pb ref as tProgressBarBoxState, percent# as float )
