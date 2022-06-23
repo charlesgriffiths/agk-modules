@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/progressbars/progressbarbox/progressbarbox.agc
 
 
 type tProgressBarBoxState
@@ -64,11 +66,11 @@ function ProgressBarBox_Update( pb ref as tProgressBarBoxState, progress as inte
   if progress < 0 then progress = 0
   if progress > pb.maxprogress then progress = pb.maxprogress
 
-  if pb.bVisible <> 0 
-    if pb.bVertical = 0
-      DrawBox( pb.x#, pb.y#, pb.x# + (progress * pb.width#)/pb.maxprogress, pb.y# + pb.height#, pb.color1, pb.color2, pb.color3, pb.color4, pb.bFilled )
-    else
+  if pb.bVisible
+    if pb.bVertical
       DrawBox( pb.x#, pb.y#, pb.x# + pb.width#, pb.y# + (progress * pb.height#)/pb.maxprogress, pb.color1, pb.color2, pb.color3, pb.color4, pb.bFilled )
+    else
+      DrawBox( pb.x#, pb.y#, pb.x# + (progress * pb.width#)/pb.maxprogress, pb.y# + pb.height#, pb.color1, pb.color2, pb.color3, pb.color4, pb.bFilled )
     endif
   endif
 
