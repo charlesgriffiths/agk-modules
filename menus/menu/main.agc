@@ -66,22 +66,25 @@ choice2 as integer = -1
 
 //  Menu_SetVisible( m2, 0 )
 
-do
-  ret = Menu_UpdateMouse( m )
-  ret2 = Menu_UpdateMouse( m2 )
+  do
+    ret = Menu_UpdateMouse( m )
+    ret2 = Menu_UpdateMouse( m2 )
 
-  if ret <> -1 then choice = ret
-  if ret2 <> -1 then choice2 = ret2
+    if ret <> -1 then choice = ret
+    if ret2 <> -1 then choice2 = ret2
 
-  color = MakeColor( 255, 0, 0 )
-  Menu_DrawOutline( m, color )
-  Menu_DrawOutline( m2, color )
+    color = MakeColor( 255, 0, 0 )
+    Menu_DrawOutline( m, color )
+    Menu_DrawOutline( m2, color )
 
 //  Menu_SetVisible( m, 0 )
 //  Menu_SetVisible( m2, 1 )
 
-  Print( ScreenFPS() )
-  Print( "Recent menu choices: " + str( choice ) + " and " + str( choice2 ) )
-  Sync()
-loop
+    Print( ScreenFPS() )
+    Print( "Recent menu choices: " + str( choice ) + " and " + str( choice2 ) )
+    Sync()
+  loop
+
+  Menu_Delete( m )
+  Menu_Delete( m2 )
 
