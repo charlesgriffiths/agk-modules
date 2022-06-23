@@ -41,18 +41,25 @@ pc3 as tProgressCircleState[]
   ProgressCircle_SetColor( pc3[1], 0, 255, 0 )
   ProgressCircle_SetColor( pc3[2], 0, 0, 255 )
 
-do
-  progress = progress + increment
-  if progress >= 300 or progress <= 0 then increment = -increment
-  
-  ProgressCircle_Update( pc, progress )
-  ProgressCircle_UpdatePercent( pc2, 100 * progress / 300.0 )
-  
-  for i = 0 to pc3.length
-    ProgressCircle_UpdateFraction( pc3[i], progress / 300.0 )
-  next i
+  do
+    progress = progress + increment
+    if progress >= 300 or progress <= 0 then increment = -increment
 
-  Print( ScreenFPS() )
-  Sync()
-loop
+    ProgressCircle_Update( pc, progress )
+    ProgressCircle_UpdatePercent( pc2, 100 * progress / 300.0 )
+
+    for i = 0 to pc3.length
+      ProgressCircle_UpdateFraction( pc3[i], progress / 300.0 )
+    next i
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
+  ProgressCircle_Delete( pc )
+  ProgressCircle_Delete( pc2 )
+
+  for i = 0 to pc3.length
+    ProgressCircle_Delete( pc3[i] )
+  next i
 
