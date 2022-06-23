@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/menus/menu/menu.agc
 
 
 #constant Menu_ChangeNone 0
@@ -35,6 +37,7 @@ type tMenuItem
   text as integer
 endtype
 
+
 type tMenuChange
   changefunction as integer
   x# as float
@@ -44,6 +47,7 @@ type tMenuChange
   b as integer
   a as integer
 endtype
+
 
 type tMenuState
   x# as float
@@ -58,6 +62,7 @@ type tMenuState
   bActive as integer
   bVisible as integer
 endtype
+
 
 
 // initialize the state of a menu instance
@@ -96,10 +101,10 @@ endfunction m
 function Menu_Delete( m ref as tMenuState )
 
   for i = 0 to m.list.length
-    if m.list[i].normalsprite <> 0 then DeleteSprite( m.list[i].normalsprite )
-    if m.list[i].hoversprite <> 0 then DeleteSprite( m.list[i].hoversprite )
-    if m.list[i].pressedsprite <> 0 then DeleteSprite( m.list[i].pressedsprite )
-    if m.list[i].text <> 0 then DeleteText( m.list[i].text )
+    if m.list[i].normalsprite then DeleteSprite( m.list[i].normalsprite )
+    if m.list[i].hoversprite then DeleteSprite( m.list[i].hoversprite )
+    if m.list[i].pressedsprite then DeleteSprite( m.list[i].pressedsprite )
+    if m.list[i].text then DeleteText( m.list[i].text )
   next i
 
   m.list.length = -1
@@ -112,7 +117,7 @@ endfunction
 // set text for a menu item
 function Menu_SetText( m ref as tMenuState, index as integer, text$ as string, size as integer, color as integer, justify as integer, xoffset# as float )
 
-  if m.list[index].text <> 0 then DeleteText( m.list[index].text )
+  if m.list[index].text then DeleteText( m.list[index].text )
   if CompareString( "", text$ )
     m.list[index].text = 0
   else
@@ -152,10 +157,10 @@ function Menu_SetDepth( m ref as tMenuState, depth as integer )
 
   m.depth = depth
   for i = 0 to m.list.length
-    if m.list[i].normalsprite <> 0 then SetSpriteDepth( m.list[i].normalsprite, depth )
-    if m.list[i].hoversprite <> 0 then SetSpriteDepth( m.list[i].hoversprite, depth )
-    if m.list[i].pressedsprite <> 0 then SetSpriteDepth( m.list[i].pressedsprite, depth )
-    if m.list[i].text <> 0 then SetTextDepth( m.list[i].text, depth-1 )
+    if m.list[i].normalsprite then SetSpriteDepth( m.list[i].normalsprite, depth )
+    if m.list[i].hoversprite then SetSpriteDepth( m.list[i].hoversprite, depth )
+    if m.list[i].pressedsprite then SetSpriteDepth( m.list[i].pressedsprite, depth )
+    if m.list[i].text then SetTextDepth( m.list[i].text, depth-1 )
   next i
 
 endfunction
@@ -188,11 +193,11 @@ choice as integer = -1
       if m.bActive and released then choice = i
     endif
 
-    if 0 <> m.list[i].normalsprite then SetSpriteVisible( m.list[i].normalsprite, 0 )
-    if 0 <> m.list[i].hoversprite then SetSpriteVisible( m.list[i].hoversprite, 0 )
-    if 0 <> m.list[i].pressedsprite then SetSpriteVisible( m.list[i].pressedsprite, 0 )
+    if m.list[i].normalsprite then SetSpriteVisible( m.list[i].normalsprite, 0 )
+    if m.list[i].hoversprite then SetSpriteVisible( m.list[i].hoversprite, 0 )
+    if m.list[i].pressedsprite then SetSpriteVisible( m.list[i].pressedsprite, 0 )
     SetSpriteVisible( sprite, 1 )
-    if 0 <> m.list[i].text then SetTextVisible( m.list[i].text, 1 )
+    if m.list[i].text then SetTextVisible( m.list[i].text, 1 )
   next i
 
 endfunction choice
@@ -231,13 +236,13 @@ function Menu_ClearTransform( m ref as tMenuState, transform as integer )
   if transform = Menu_Hover
     m.hoverchange.length = -1
     for i = 0 to m.list.length
-      if m.list[i].hoversprite <> 0 then DeleteSprite( m.list[i].hoversprite )
+      if m.list[i].hoversprite then DeleteSprite( m.list[i].hoversprite )
       m.list[i].hoversprite = 0
     next i
   elseif transform = Menu_Pressed
     m.pressedchange.length = -1
     for i = 0 to m.list.length
-      if m.list[i].pressedsprite <> 0 then DeleteSprite( m.list[i].pressedsprite )
+      if m.list[i].pressedsprite then DeleteSprite( m.list[i].pressedsprite )
       m.list[i].pressedsprite = 0
     next i
   endif
@@ -253,9 +258,9 @@ mc as tMenuChange
   mc.x# = dx#
   mc.y# = dy#
 
-  if transform = Menu_Hover
+  if Menu_Hover = transform
     m.hoverchange.insert( mc )
-  elseif transform = Menu_Pressed
+  elseif Menu_Pressed = transform
     m.pressedchange.insert( mc )
   endif
 
@@ -269,9 +274,9 @@ mc as tMenuChange
   mc.changefunction = Menu_ChangeAlpha
   mc.a = da
 
-  if transform = Menu_Hover
+  if Menu_Hover = transform
     m.hoverchange.insert( mc )
-  elseif transform = Menu_Pressed
+  elseif Menu_Pressed = transform
     m.pressedchange.insert( mc )
   endif
 
@@ -288,9 +293,9 @@ mc as tMenuChange
   mc.b = db
   mc.a = da
 
-  if transform = Menu_Hover
+  if Menu_Hover = transform
     m.hoverchange.insert( mc )
-  elseif transform = Menu_Pressed
+  elseif Menu_Pressed = transform
     m.pressedchange.insert( mc )
   endif
 
@@ -305,9 +310,9 @@ mc as tMenuChange
   mc.x# = dx#
   mc.y# = dy#
 
-  if transform = Menu_Hover
+  if Menu_Hover = transform
     m.hoverchange.insert( mc )
-  elseif transform = Menu_Pressed
+  elseif Menu_Pressed = transform
     m.pressedchange.insert( mc )
   endif
 
@@ -317,11 +322,11 @@ endfunction
 // set the transform sprite directly
 function Menu_SetTransformSprite( m ref as tMenuState, index as integer, transform as integer, sprite as integer )
 
-  if transform = Menu_Hover
-    if m.list[index].hoversprite <> 0 then DeleteSprite( m.list[index].hoversprite )
+  if Menu_Hover = transform
+    if m.list[index].hoversprite then DeleteSprite( m.list[index].hoversprite )
     m.list[index].hoversprite = sprite
-  elseif transform = Menu_Pressed
-    if m.list[index].pressedsprite <> 0 then DeleteSprite( m.list[index].pressedsprite )
+  elseif Menu_Pressed = transform
+    if m.list[index].pressedsprite then DeleteSprite( m.list[index].pressedsprite )
     m.list[index].pressedsprite = sprite
   endif
 
@@ -336,10 +341,10 @@ function Menu_SetVisible( m ref as tMenuState, bVisible as integer )
 
   if bVisible = 0
     for i = 0 to m.list.length
-      if 0 <> m.list[i].normalsprite then SetSpriteVisible( m.list[i].normalsprite, 0 )
-      if 0 <> m.list[i].hoversprite then SetSpriteVisible( m.list[i].hoversprite, 0 )
-      if 0 <> m.list[i].pressedsprite then SetSpriteVisible( m.list[i].pressedsprite, 0 )
-      if 0 <> m.list[i].text then SetTextVisible( m.list[i].text, 0 )
+      if m.list[i].normalsprite then SetSpriteVisible( m.list[i].normalsprite, 0 )
+      if m.list[i].hoversprite then SetSpriteVisible( m.list[i].hoversprite, 0 )
+      if m.list[i].pressedsprite then SetSpriteVisible( m.list[i].pressedsprite, 0 )
+      if m.list[i].text then SetTextVisible( m.list[i].text, 0 )
     next i
   endif
 
