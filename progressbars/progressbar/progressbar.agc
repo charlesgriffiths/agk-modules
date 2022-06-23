@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/progressbars/progressbar/progressbar.agc
 
 
 type tProgressBarState
@@ -30,12 +32,12 @@ pb as tProgressBarState
   if count<2 then count = 2
   pb.sprites.length = count-1
 
-  if bVertical = 0 and width# < 0
+  if 0 = bVertical and width# < 0
     x# = x# - barwidth#
     width# = width# + 2*barwidth#
   endif
   
-  if bVertical <> 0 and height# < 0
+  if bVertical and height# < 0
     y# = y# - barwidth#
     height# = height# + 2*barwidth#
   endif
@@ -78,7 +80,6 @@ state as integer
   if progress > pb.sprites.length then progress = pb.sprites.length+1
 
   if pb.sprites.length >= 0
-
     if progress > pb.progress
       for i = pb.progress to progress-1
         SetSpriteColorAlpha( pb.sprites[i], 255 )
