@@ -65,24 +65,39 @@ pb3r as tProgressBarState[]
   ProgressBar_SetColor( pb3r[2], 0, 0, 255 )
 
 
-do
-  progress = progress + increment
-  if progress >= 300 or progress <= 0 then increment = -increment
-  
-  ProgressBar_Update( pb, progress )
-  ProgressBar_Update( pbr, progress )
-  ProgressBar_Update( pbv, progress )
-  ProgressBar_UpdatePercent( pb2, 100 * progress / 300.0 )
-  ProgressBar_UpdatePercent( pb2r, 100 * progress / 300.0 )
+  do
+    progress = progress + increment
+    if progress >= 300 or progress <= 0 then increment = -increment
+
+    ProgressBar_Update( pb, progress )
+    ProgressBar_Update( pbr, progress )
+    ProgressBar_Update( pbv, progress )
+    ProgressBar_UpdatePercent( pb2, 100 * progress / 300.0 )
+    ProgressBar_UpdatePercent( pb2r, 100 * progress / 300.0 )
+
+    for i = 0 to pb3.length
+      ProgressBar_UpdateFraction( pb3[i], progress / 300.0 )
+    next i
+
+    for i = 0 to pb3r.length
+      ProgressBar_UpdateFraction( pb3r[i], progress / 300.0 )
+    next i
+
+    Print( ScreenFPS() )
+    Sync()
+  loop
+
+  ProgressBar_Delete( pb )
+  ProgressBar_Delete( pbr )
+  ProgressBar_Delete( pbv )
+  ProgressBar_Delete( pb2 )
+  ProgressBar_Delete( pb2r )
   
   for i = 0 to pb3.length
-    ProgressBar_UpdateFraction( pb3[i], progress / 300.0 )
+    ProgressBar_Delete( pb3[i] )
   next i
 
   for i = 0 to pb3r.length
-    ProgressBar_UpdateFraction( pb3r[i], progress / 300.0 )
+    ProgressBar_Delete( pb3r[i] )
   next i
 
-  Print( ScreenFPS() )
-  Sync()
-loop
