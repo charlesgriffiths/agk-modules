@@ -43,10 +43,12 @@ uncheck as integer
   RadioButton_SetState( rb, 0 )
   RadioButton_SetAllowUnselect( rb, 0 )
 
-do
-    Print( ScreenFPS() )
-    
+  do
     RadioButton_UpdateMouse( rb )
+
+    Print( ScreenFPS() )
     Sync()
-loop
+  loop
+
+  RadioButton_Delete( rb )
 
