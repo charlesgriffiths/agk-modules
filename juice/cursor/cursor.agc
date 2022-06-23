@@ -14,6 +14,8 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+//
+// https://github.com/charlesgriffiths/agk-modules/blob/main/juice/cursor/cursor.agc
 
 
 // all information needed to recreate the tweenchain
@@ -58,12 +60,12 @@ endfunction c
 // delete this cursor
 function Cursor_Delete( c ref as tCursorState )
 
-  if 0 <> c.sprite then DeleteSprite( c.sprite )
+  if c.sprite then DeleteSprite( c.sprite )
   c.sprite = 0
-  if 0 <> c.restoresprite then DeleteSprite( c.restoresprite )
+  if c.restoresprite then DeleteSprite( c.restoresprite )
   c.restoresprite = 0
 
-  if 0 <> c.tweenchain then DeleteTweenChain( c.tweenchain )
+  if c.tweenchain then DeleteTweenChain( c.tweenchain )
   c.tweenchain = 0
 
   Cursor_ClearChanges( c )
@@ -74,20 +76,20 @@ endfunction
 // clear all changes for this cursor
 function Cursor_ClearChanges( c ref as tCursorState )
 
-  if 0 <> c.tweenchain
+  if c.tweenchain
     DeleteTweenChain( c.tweenchain )
     c.tweenchain = CreateTweenChain()
   endif
 
   for i = 0 to c.change.length
-    if c.change[i].sprite <> 0 then DeleteSprite( c.change[i].sprite )
-    if 0 <> c.change[i].tween then DeleteTween( c.change[i].tween )
+    if c.change[i].sprite then DeleteSprite( c.change[i].sprite )
+    if c.change[i].tween then DeleteTween( c.change[i].tween )
   next i
 
   c.change.length = -1
 
-  if 0 <> c.restoresprite
-    if 0 <> c.sprite then DeleteSprite( c.sprite )
+  if c.restoresprite
+    if c.sprite then DeleteSprite( c.sprite )
     c.sprite = CloneSprite( c.restoresprite )
     SetSpriteVisible( c.sprite, 1 )
   endif
@@ -122,7 +124,7 @@ delay# as float = 0
 
 startsprite as integer
 
-  if c.change.length = 0
+  if 0 = c.change.length
     startsprite = c.sprite
   else
     startsprite = c.change[c.change.length-1].sprite
@@ -176,14 +178,13 @@ endfunction
 // call Cursor_Update once per frame, or whenever the cursor should be updated
 function Cursor_Update( c ref as tCursorState )
 
-  if 0 = c.bActive
+  if c.bActive
+    if c.bLoop or 0 = c.bStarted then PlayTweenChain( c.tweenchain )
+    c.bStarted = 1
+  else
     StopTweenChain( c.tweenchain )
     c.bStarted = 0
-    exitfunction
   endif
-
-  if 1 = c.bLoop or 0 = c.bStarted then PlayTweenChain( c.tweenchain )
-  c.bStarted = 1
 
 endfunction
 
@@ -228,5 +229,20 @@ endfunction
 // start playing the cursor (cursor will start playing and loop continuously by default)
 function Cursor_StartPlaying( c ref as tCursorState )
   c.bStarted = 0
+endfunction
+
+
+// stop playing the cursor and restore the original sprite
+function Cursor_StopPlaying( c ref as tCursorState )
+
+  if c.restoresprite
+    if c.sprite then DeleteSprite( c.sprite )
+    c.sprite = CloneSprite( c.restoresprite )
+    SetSpriteVisible( c.sprite, 1 )
+  endif
+
+  c.bLoop = 0
+  c.bStarted = 1
+
 endfunction
 
