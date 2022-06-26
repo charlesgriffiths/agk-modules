@@ -119,7 +119,7 @@ function Slider_GetXPercent( ss ref as tSliderState )
 endfunction xp#
 
 function Slider_GetXFraction( ss ref as tSliderState )
-  xf# = Slider_GetX( ss ) / ss.xrange
+  xf# = Slider_GetX( ss ) / (1.0 * ss.xrange)
 endfunction xf#
 
 
@@ -139,7 +139,7 @@ function Slider_GetYPercent( ss ref as tSliderState )
 endfunction yp#
 
 function Slider_GetYFraction( ss ref as tSliderState )
-  yf# = Slider_GetY( ss ) / ss.yrange
+  yf# = Slider_GetY( ss ) / (1.0 * ss.yrange)
 endfunction yf#
 
 
