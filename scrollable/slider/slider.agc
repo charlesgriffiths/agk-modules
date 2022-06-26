@@ -26,6 +26,7 @@ type tSliderState
 
   bActive as integer
   bVisible as integer
+  bPinBox as integer
 endtype
 
 
@@ -44,6 +45,7 @@ ss as tSliderState
 
   ss.bActive = 1
   ss.bVisible = 1
+  ss.bPinBox = 0
 
   Slider_SetX( ss, Slider_GetX( ss ))
   Slider_SetY( ss, Slider_GetY( ss ))
@@ -70,6 +72,19 @@ function Slider_SetPinSize( ss ref as tSliderState, width# as float, height# as 
   SetSpriteSize( ss.pin, width#, height# )
   Slider_SetXFraction( ss, x# )
   Slider_SetYFraction( ss, y# )
+
+endfunction
+
+
+// set the pin to display as a box
+function Slider_SetPinBox( ss ref as tSliderState, bPinBox as integer )
+
+  ss.bPinBox = bPinBox
+  if bPinBox
+    SetSpriteVisible( ss.pin, 0 )
+  else
+    SetSpriteVisible( ss.pin, 1 )
+  endif
 
 endfunction
 
@@ -192,8 +207,23 @@ updated as integer = 0
       if y# > ymax# then y# = ymax#
 
       SetSpritePositionByOffset( ss.pin, x#, y# )
+      if GetSpriteX( ss.pin ) < GetSpriteX( ss.surface ) then SetSpriteX( ss.pin, GetSpriteX( ss.surface ))
+      if GetSpriteY( ss.pin ) < GetSpriteY( ss.surface ) then SetSpriteY( ss.pin, GetSpriteY( ss.surface ))
       updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
     endif
+  endif
+
+  if ss.bPinBox
+    color = MakeColor( GetSpriteColorRed( ss.pin ), GetSpriteColorGreen( ss.pin ), GetSpriteColorBlue( ss.pin ))
+    x# = GetSpriteX( ss.pin ) - 1
+    y# = GetSpriteY( ss.pin ) - 1
+    x2# = GetSpriteX( ss.pin ) + GetSpriteWidth( ss.pin )
+    y2# = GetSpriteY( ss.pin ) + GetSpriteHeight( ss.pin )
+    if x# < GetSpriteX( ss.surface ) then x# = GetSpriteX( ss.surface )
+    if y# < GetSpriteY( ss.surface ) then y# = GetSpriteY( ss.surface )
+    if x2# > GetSpriteX( ss.surface ) + GetSpriteWidth( ss.surface ) then x2# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.surface )
+    if y2# > GetSpriteY( ss.surface ) + GetSpriteHeight( ss.surface ) then y2# = GetSpriteY( ss.surface ) + GetSpriteHeight( ss.surface )
+    DrawBox( x#, y#, x2#, y2#, color, color, color, color, 0 )
   endif
 
 endfunction updated
@@ -214,5 +244,10 @@ endfunction
 // enable/disable the slider
 function Slider_SetActive( ss ref as tSliderState, bActive as integer )
   ss.bActive = bActive
+endfunction
+
+
+function Slider_DrawBox( ss ref as tSliderState, color as integer )
+  DrawBox( GetSpriteX( ss.surface ), GetSpriteY( ss.surface ), GetSpriteX( ss.surface ) + GetSpriteWidth( ss.surface ), GetSpriteY( ss.surface ) + GetSpriteHeight( ss.surface ), color, color, color, color, 0 )
 endfunction
 
