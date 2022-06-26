@@ -45,6 +45,9 @@ ss as tSliderState
   ss.bActive = 1
   ss.bVisible = 1
 
+  Slider_SetX( ss, Slider_GetX( ss ))
+  Slider_SetY( ss, Slider_GetY( ss ))
+
 endfunction ss
 
 
@@ -55,6 +58,18 @@ function Slider_Delete( ss ref as tSliderState )
   ss.surface = 0
   if ss.pin then DeleteSprite( ss.pin )
   ss.pin = 0
+
+endfunction
+
+
+// set the pin size of the slider
+function Slider_SetPinSize( ss ref as tSliderState, width# as float, height# as float )
+
+  x# = Slider_GetXFraction( ss )
+  y# = Slider_GetYFraction( ss )
+  SetSpriteSize( ss.pin, width#, height# )
+  Slider_SetXFraction( ss, x# )
+  Slider_SetYFraction( ss, y# )
 
 endfunction
 
@@ -85,7 +100,7 @@ endfunction
 function Slider_SetY( ss ref as tSliderState, y as integer )
 
   if y < 0 then y = 0
-  if y > ss.yrange then x = ss.yrange
+  if y > ss.yrange then y = ss.yrange
 
   min# = GetSpriteY( ss.surface )
   height# = GetSpriteHeight( ss.surface ) - GetSpriteHeight( ss.pin )
