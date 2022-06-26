@@ -182,12 +182,12 @@ savedscrolloffset# as float
       sl.bRedisplay = 1
       
       sl.mousedownmove# = sl.mousedownmove# + Abs( x# - sl.mousedownx# ) + Abs( y# - sl.mousedowny# )
-    elseif released > 0 and sl.mousedownmove# < 50
+    elseif released and sl.mousedownmove# < 50
     // click
       if sl.bClickToSelect
         for i = sl.topindex to sl.list.length
           if GetSpriteVisible( sl.list[i] )
-            if GetSpriteHitTest( sl.list[i], 1+sl.x#, y# ) > 0
+            if GetSpriteHitTest( sl.list[i], 1+sl.x#, y# )
               updated = 1
               if SpriteList_GetSelected( sl, i )
                 SpriteList_ClearSelected( sl, i )
