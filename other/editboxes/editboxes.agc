@@ -75,6 +75,8 @@ ebs as tEditBoxes
   ebs.y# = y#
   ebs.grabfocus = -1
 
+  ebs.savepos = -1
+
   ebs.bVisible = 1
   ebs.bActive = 1
 
@@ -426,22 +428,27 @@ text$ as string
   if -1 = index then exitfunction  // this editbox does not belong to this editboxes instance
 
   if GetRawKeyPressed( 36 ) or GetRawKeyPressed( 37 ) or GetRawKeyPressed( 38 ) or GetRawKeyPressed( 39 ) or GetRawKeyPressed( 40 )
-    ebs.savepos = GetEditBoxCursorPosition( boxid )
+    if -1 = ebs.savepos then ebs.savepos = GetEditBoxCursorPosition( boxid )
+  endif
+
+  if GetRawKeyState( 36 ) or GetRawKeyState( 37 ) or GetRawKeyState( 38 ) or GetRawKeyState( 39 ) or GetRawKeyState( 40 )
+    if -1 <> ebs.savepos then SetEditBoxCursorPosition( boxid, ebs.savepos )
   endif
 
   if GetRawKeyReleased( 36 ) or GetRawKeyReleased( 37 ) or GetRawKeyReleased( 38 ) or GetRawKeyReleased( 39 ) or GetRawKeyReleased( 40 )
-    SetEditBoxCursorPosition( boxid, ebs.savepos )
+    if -1 <> ebs.savepos then SetEditBoxCursorPosition( boxid, ebs.savepos )
+    ebs.savepos = -1
   endif
 
-  if GetRawKeyReleased( 110 )
+  if GetRawKeyPressed( 110 )
     s$ = GetCharBuffer()
     if len( s$ )
       if CompareString( ".", right( s$, 1 )) then exitfunction
     endif
     s$ = "."
-  elseif GetRawKeyReleased( 45 )
+  elseif GetRawKeyPressed( 45 )
     s$ = "0"
-  elseif GetRawKeyReleased( 187 ) 
+  elseif GetRawKeyPressed( 187 ) 
     s$ = "1"
     pos = GetEditBoxCursorPosition( boxid )
     text$ = GetEditBoxText( boxid )
@@ -464,21 +471,21 @@ text$ as string
         SetEditBoxCursorPosition( boxid, pos-1 )
       endif
     endif
-  elseif GetRawKeyReleased( 40 )
+  elseif GetRawKeyPressed( 40 )
     s$ = "2"
-  elseif GetRawKeyReleased( 34 )
+  elseif GetRawKeyPressed( 34 )
     s$ = "3"
-  elseif GetRawKeyReleased( 37 )
+  elseif GetRawKeyPressed( 37 )
     s$ = "4"
-  elseif GetRawKeyReleased( 12 )
+  elseif GetRawKeyPressed( 12 )
     s$ = "5"
-  elseif GetRawKeyReleased( 39 )
+  elseif GetRawKeyPressed( 39 )
     s$ = "6"
-  elseif GetRawKeyReleased( 36 )
+  elseif GetRawKeyPressed( 36 )
     s$ = "7"
-  elseif GetRawKeyReleased( 38 )
+  elseif GetRawKeyPressed( 38 )
     s$ = "8"
-  elseif GetRawKeyReleased( 33 )
+  elseif GetRawKeyPressed( 33 )
     s$ = "9"
   endif
 
