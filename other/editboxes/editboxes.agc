@@ -437,17 +437,27 @@ text$ as string
     s$ = "."
   elseif GetRawKeyReleased( 45 )
     s$ = "0"
-  elseif GetRawKeyReleased( 187 )
+  elseif GetRawKeyReleased( 187 ) 
     s$ = "1"
     pos = GetEditBoxCursorPosition( boxid )
     text$ = GetEditBoxText( boxid )
 
     if pos > 0
       if CompareString( "=", mid( text$, pos, 1 ))
-        text$ = left( text$, pos-1 ) + "1" + right( text$, len(text$)-pos )  // remove =, insert 1
+        text$ = left( text$, pos-1 ) + right( text$, len(text$)-pos )  // remove =
         SetEditBoxText( boxid, text$ )
-        SetEditBoxCursorPosition( boxid, pos )
-       exitfunction
+        SetEditBoxCursorPosition( boxid, pos-1 )
+      endif
+    endif
+  elseif 187 = GetRawLastKey()
+    pos = GetEditBoxCursorPosition( boxid )
+    text$ = GetEditBoxText( boxid )
+
+    if pos > 0
+      if CompareString( "=", mid( text$, pos, 1 ))
+        text$ = left( text$, pos-1 ) + right( text$, len(text$)-pos )  // remove =
+        SetEditBoxText( boxid, text$ )
+        SetEditBoxCursorPosition( boxid, pos-1 )
       endif
     endif
   elseif GetRawKeyReleased( 40 )
