@@ -60,6 +60,7 @@ type tEditBoxes
   grabfocus as integer
 
   bFixHtmlNumlock as integer
+  savepos as integer
   bVisible as integer
   bActive as integer
 endtype
@@ -404,10 +405,13 @@ function EditBoxes_GetInputFinished( ebs ref as tEditBoxes, index as integer )
 endfunction 0
 
 
-// arrow keys can't be used because the scan codes overlap with numeric keypad in html5
+// arrow keys/home/end can't be used because the scan codes overlap with numeric keypad in html5
 function EditBoxes_ConvertHtml5Keypad( ebs ref as tEditBoxes )
 s$ as string = ""
 index as integer = -1
+boxid as integer
+pos as integer
+text$ as string
 
   boxid = GetCurrentEditBox()
   if not boxid then exitfunction   // 0 means no edit box has focus
@@ -421,6 +425,10 @@ index as integer = -1
   
   if -1 = index then exitfunction  // this editbox does not belong to this editboxes instance
 
+  if GetRawKeyPressed( 36 ) or GetRawKeyPressed( 37 ) or GetRawKeyPressed( 39 ) or GetRawKeyPressed( 40 )
+    ebs.savepos = GetEditBoxCursorPosition( boxid )
+  endif
+
   if GetRawKeyReleased( 110 )
     s$ = GetCharBuffer()
     if len( s$ )
@@ -431,18 +439,33 @@ index as integer = -1
     s$ = "0"
   elseif GetRawKeyReleased( 187 )
     s$ = "1"
+    pos = GetEditBoxCursorPosition( boxid )
+    text$ = GetEditBoxText( boxid )
+
+    if pos > 0
+      if CompareString( "=", mid( text$, pos, 1 ))
+        text$ = left( text$, pos-1 ) + "1" + right( text$, len(text$)-pos )  // remove =, insert 1
+        SetEditBoxText( boxid, text$ )
+        SetEditBoxCursorPosition( boxid, pos )
+       exitfunction
+      endif
+    endif
   elseif GetRawKeyReleased( 40 )
     s$ = "2"
+    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 34 )
     s$ = "3"
   elseif GetRawKeyReleased( 37 )
     s$ = "4"
+    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 12 )
     s$ = "5"
   elseif GetRawKeyReleased( 39 )
     s$ = "6"
+    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 36 )
     s$ = "7"
+    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 38 )
     s$ = "8"
   elseif GetRawKeyReleased( 33 )
@@ -451,8 +474,6 @@ index as integer = -1
 
   if not len(s$) then exitfunction
 
-pos as integer
-text$ as string
 
   pos = GetEditBoxCursorPosition( boxid )
   text$ = GetEditBoxText( boxid )
