@@ -466,7 +466,6 @@ text$ as string
     endif
   elseif GetRawKeyReleased( 40 )
     s$ = "2"
-    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 34 )
     s$ = "3"
   elseif GetRawKeyReleased( 37 )
