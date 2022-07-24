@@ -422,11 +422,15 @@ text$ as string
       exit
     endif
   next i
-  
+
   if -1 = index then exitfunction  // this editbox does not belong to this editboxes instance
 
-  if GetRawKeyPressed( 36 ) or GetRawKeyPressed( 37 ) or GetRawKeyPressed( 39 ) or GetRawKeyPressed( 40 )
+  if GetRawKeyPressed( 36 ) or GetRawKeyPressed( 37 ) or GetRawKeyPressed( 38 ) or GetRawKeyPressed( 39 ) or GetRawKeyPressed( 40 )
     ebs.savepos = GetEditBoxCursorPosition( boxid )
+  endif
+
+  if GetRawKeyReleased( 36 ) or GetRawKeyReleased( 37 ) or GetRawKeyReleased( 38 ) or GetRawKeyReleased( 39 ) or GetRawKeyReleased( 40 )
+    SetEditBoxCursorPosition( boxid, ebs.savepos )
   endif
 
   if GetRawKeyReleased( 110 )
@@ -455,7 +459,7 @@ text$ as string
 
     if pos > 0
       if CompareString( "=", mid( text$, pos, 1 ))
-        text$ = left( text$, pos-1 ) + right( text$, len(text$)-pos )  // remove =
+        text$ = left( text$, pos-1 ) + right( text$, len(text$)-pos )  // remove = when key held down
         SetEditBoxText( boxid, text$ )
         SetEditBoxCursorPosition( boxid, pos-1 )
       endif
@@ -467,15 +471,12 @@ text$ as string
     s$ = "3"
   elseif GetRawKeyReleased( 37 )
     s$ = "4"
-    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 12 )
     s$ = "5"
   elseif GetRawKeyReleased( 39 )
     s$ = "6"
-    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 36 )
     s$ = "7"
-    SetEditBoxCursorPosition( boxid, ebs.savepos )
   elseif GetRawKeyReleased( 38 )
     s$ = "8"
   elseif GetRawKeyReleased( 33 )
@@ -484,14 +485,14 @@ text$ as string
 
   if not len(s$) then exitfunction
 
-
   pos = GetEditBoxCursorPosition( boxid )
   text$ = GetEditBoxText( boxid )
-  
+
   text$ = left( text$, pos ) + s$ + right( text$, len(text$)-pos )
 
   SetEditBoxText( boxid, text$ )
   SetEditBoxCursorPosition( boxid, pos+1 )
+  ebs.savepos = pos+1
 
 endfunction
 
