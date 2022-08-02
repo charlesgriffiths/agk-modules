@@ -41,6 +41,7 @@ endtype
 
 function SV_Init()
 sv as tSV
+  sv.text$ = LoadSharedVariable( "_init", "" )
 endfunction sv
 
 
