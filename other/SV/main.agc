@@ -37,6 +37,10 @@ UseNewDefaultFonts( 1 )
   SaveImageButton = 4
   AddVirtualButton( SaveImageButton, 224, 32, 64 )
   SetVirtualButtonText( SaveImageButton, "Save"+chr(10)+"Image" )
+  
+  FullScreenButton = 5
+  AddVirtualButton( FullScreenButton, 288, 32, 64 )
+  SetVirtualButtonText( FullScreenButton, "Fullscreen" )
 
 
 text as integer
@@ -150,6 +154,10 @@ copytoclipboard$ as string = ""
       SetSpriteVisible( sprite, 1 )
     endif
 
+    if GetVirtualButtonReleased( FullScreenButton )
+      SV_FullScreen( sv )
+    endif
+
     sync()
   loop
 
@@ -233,4 +241,5 @@ function img_create_RGBA(www,hhh, data as integer[])
     deleteMemblock(mmm)
  
 endfunction nnn
+
 
