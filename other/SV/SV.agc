@@ -50,6 +50,11 @@ function SV_GetArgs( sv ref as tSV )
 endfunction ""
 
 
+function SV_FullScreen( sv ref as tSV )
+  SaveSharedVariable( "_fullscreen", "" )
+endfunction
+
+
 function SV_SaveLocalStorage( sv ref as tSV, variable$ as string, value$ as string )
   SaveSharedVariable( "_ls"+variable$, value$ )
 endfunction
