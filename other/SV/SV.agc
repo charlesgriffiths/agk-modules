@@ -55,6 +55,11 @@ function SV_FullScreen( sv ref as tSV )
 endfunction
 
 
+function SV_LastKeyDown( sv ref as tSV )
+  sv.text$ = LoadSharedVariable( "_kbkeydown", "" )
+endfunction sv.text$
+
+
 function SV_SaveLocalStorage( sv ref as tSV, variable$ as string, value$ as string )
   SaveSharedVariable( "_ls"+variable$, value$ )
 endfunction
