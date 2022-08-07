@@ -73,6 +73,12 @@ convertimagepoll as integer = 0
 copytoclipboard$ as string = ""
 
   do
+    if len( SV_LastKeyDown( sv ))
+      SetTextString( text, "Key pressed: " + sv.text$ )
+      SetTextVisible( text, 1 )
+      SetSpriteVisible( sprite, 0 )
+    endif
+  
     if GetVirtualButtonReleased( TextButton )
       SV_OpenTextFile( sv )
       readtextpoll = 1
@@ -241,5 +247,4 @@ function img_create_RGBA(www,hhh, data as integer[])
     deleteMemblock(mmm)
  
 endfunction nnn
-
 
