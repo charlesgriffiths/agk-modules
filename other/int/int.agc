@@ -233,18 +233,7 @@ n as tInt
   for i = 0 to n2.digits.length
     Int_AddDigit( n, i+n2.power, n2.digits[i] )
   next i
-/*
-  n.power = n1.power
-  if n.power > n2.power then n.power = n2.power
 
-  for i = n.power to n1.power + n1.digits.length
-    Int_AddDigit( n, i, n1.digits[i-n1.power] )
-  next i
-
-  for i = n.power to n2.power + n2.digits.length
-    Int_AddDigit( n, i, n2.digits[i-n2.power] )
-  next i
-/**/
   Int_SetPrecision( n, n1.precision )
 
 endfunction n
@@ -329,9 +318,7 @@ endfunction n
 function Int_MultiplyInt( n1 ref as tInt, n2 as integer )
 n as tInt
 
-  n.digits.insert( n2 && 0xffff )
-  n.digits.insert( (n2 >> 16) && 0xffff )
-  n = Int_Multiply( n1, n )
+  n = Int_Multiply( n1, Int_Init( n2 ))
 
 endfunction n
 
@@ -368,41 +355,16 @@ n2sign as integer
   if n1.sign < 0 then n = Int_Negate( n )
   if n2sign < 0 then n = Int_Negate( n )
 
+  Int_SetPrecision( n, n1.precision )
+
 endfunction n
 
 
 // works for n2 from about -2 billion to +2 billion, outside that range use Int_Divide()
 function Int_DivideInt( n1 ref as tInt, n2 as integer )
 n as tInt
-values as tInt[]
-adds as tInt[]
-remainder as tInt
-n2sign as integer
 
-  if not n2 then exitfunction n
-  if n2 < 0
-    n2sign = -1
-    n2 = -n2
-  endif
-
-  values.insert( Int_Init( n2 ))
-  adds.insert( Int_Init( 1 ))
-  while Int_GT( n1, values[values.length] )
-    values.insert( Int_MultiplyInt( values[values.length], 2 ))
-    adds.insert( Int_MultiplyInt( adds[adds.length], 2 ))
-  endwhile
-
-  remainder = n1
-  remainder.sign = 0
-  for i = values.length to 0 step -1
-    while Int_GE( remainder, values[i] )
-      remainder = Int_Subtract( remainder, values[i] )
-      n = Int_Add( n, adds[i] )
-    endwhile
-  next i
-
-  if n1.sign < 0 then n = Int_Negate( n )
-  if n2sign < 0 then n = Int_Negate( n )
+  n = Int_Divide( n1, Int_Init( n2 ))
 
 endfunction n
 
@@ -443,38 +405,36 @@ endfunction remainder
 
 
 function Int_ModInt( n1 ref as tInt, n2 as integer )
-n as tInt
-values as tInt[]
-adds as tInt[]
 remainder as tInt
-n2sign as integer
 
-  if not n2 then exitfunction n
-  if n2 < 0
-    n2sign = -1
-    n2 = -n2
-  endif
-
-  values.insert( Int_Init( n2 ))
-  adds.insert( Int_Init( 1 ))
-  while Int_GT( n1, values[values.length] )
-    values.insert( Int_MultiplyInt( values[values.length], 2 ))
-    adds.insert( Int_MultiplyInt( adds[adds.length], 2 ))
-  endwhile
-
-  remainder = n1
-  remainder.sign = 0
-  for i = values.length to 0 step -1
-    while Int_GE( remainder, values[i] )
-      remainder = Int_Subtract( remainder, values[i] )
-      n = Int_Add( n, adds[i] )
-    endwhile
-  next i
-
-  if n1.sign < 0 then remainder = Int_Negate( remainder )
-  if n2sign < 0 then remainder = Int_Negate( remainder )
+  remainder = Int_Mod( n1, Int_Init( n2 ))
 
 endfunction remainder
+
+
+function Int_Pow( n1 ref as tInt, n2 as integer )
+factors as tInt[]
+powers as integer[]
+n as tInt
+
+  n = Int_Init( 1 )
+  factors.insert( n1 )
+  powers.insert( 1 )
+  while powers[powers.length] < n2
+    factors.insert( Int_Multiply( factors[factors.length], factors[factors.length] ))
+    powers.insert( 2 * powers[powers.length] )
+  endwhile
+
+  for i = factors.length to 0 step -1
+    if n2 >= powers[i]
+      n = Int_Multiply( n, factors[i] )
+      dec n2, powers[i]
+    endif
+  next i
+
+  Int_SetPrecision( n, n1.precision )
+
+endfunction n
 
 
 // for negative n, return the log of Abs(n)
