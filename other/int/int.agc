@@ -189,6 +189,19 @@ function Int_AddDigit( n ref as tInt, place as integer, value as integer )
 endfunction
 
 
+function Int_Negate( n ref as tInt )
+neg as tInt
+
+  neg = n
+  if neg.sign >= 0
+    neg.sign = -1
+  else
+    neg.sign = 0
+  endif
+
+endfunction neg
+
+
 function Int_Add( n1 ref as tInt, n2 ref as tInt )
 n as tInt
 
@@ -237,17 +250,12 @@ n as tInt
 endfunction n
 
 
-function Int_Negate( n ref as tInt )
-neg as tInt
+function Int_AddInt( n1 ref as tInt, n2 as integer )
+n as tInt
 
-  neg = n
-  if neg.sign >= 0
-    neg.sign = -1
-  else
-    neg.sign = 0
-  endif
+  n = Int_Add( n1, Int_Init( n2 ))
 
-endfunction neg
+endfunction n
 
 
 function Int_Subtract( n1 ref as tInt, n2 ref as tInt )
@@ -292,12 +300,13 @@ n as tInt
 endfunction n
 
 
-function Int_AddInt( n1 ref as tInt, n2 as integer )
+function Int_SubtractInt( n1 ref as tInt, n2 as integer )
 n as tInt
 
-  n = Int_Add( n1, Int_Init( n2 ))
+  n = Int_Subtract( n1, Int_Init( n2 ))
 
 endfunction n
+
 
 
 function Int_Multiply( n1 ref as tInt, n2 ref as tInt )
@@ -325,22 +334,6 @@ n as tInt
   n = Int_Multiply( n1, n )
 
 endfunction n
-
-
-// for negative n, return the log of Abs(n)
-function Int_Log( n ref as tInt )
-
-  Int_RemoveLeadingZeros( n )
-
-  if -1 = n.digits.length
-    exitfunction log( 0 )
-  elseif 0 = n.digits.length
-    exitfunction log( n.digits[0] ) + n.power * log( 65536 )
-  else
-    exitfunction log( n.digits[n.digits.length] + n.digits[n.digits.length-1]/65536.0 ) + (n.power + n.digits.length) * log( 65536 )
-  endif
-
-endfunction 0.0
 
 
 function Int_Divide( n1 ref as tInt, n2 as tInt )
@@ -372,8 +365,8 @@ n2sign as integer
     endwhile
   next i
 
-  if n1.sign < 0 then Int_Negate( n )
-  if n2sign < 0 then Int_Negate( n )
+  if n1.sign < 0 then n = Int_Negate( n )
+  if n2sign < 0 then n = Int_Negate( n )
 
 endfunction n
 
@@ -408,8 +401,8 @@ n2sign as integer
     endwhile
   next i
 
-  if n1.sign < 0 then Int_Negate( n )
-  if n2sign < 0 then Int_Negate( n )
+  if n1.sign < 0 then n = Int_Negate( n )
+  if n2sign < 0 then n = Int_Negate( n )
 
 endfunction n
 
@@ -443,8 +436,8 @@ n2sign as integer
     endwhile
   next i
 
-  if n1.sign < 0 then Int_Negate( remainder )
-  if n2sign < 0 then Int_Negate( remainder )
+  if n1.sign < 0 then remainder = Int_Negate( remainder )
+  if n2sign < 0 then remainder = Int_Negate( remainder )
 
 endfunction remainder
 
@@ -478,10 +471,26 @@ n2sign as integer
     endwhile
   next i
 
-  if n1.sign < 0 then Int_Negate( remainder )
-  if n2sign < 0 then Int_Negate( remainder )
+  if n1.sign < 0 then remainder = Int_Negate( remainder )
+  if n2sign < 0 then remainder = Int_Negate( remainder )
 
 endfunction remainder
+
+
+// for negative n, return the log of Abs(n)
+function Int_Log( n ref as tInt )
+
+  Int_RemoveLeadingZeros( n )
+
+  if -1 = n.digits.length
+    exitfunction log( 0 )
+  elseif 0 = n.digits.length
+    exitfunction log( n.digits[0] ) + n.power * log( 65536 )
+  else
+    exitfunction log( n.digits[n.digits.length] + n.digits[n.digits.length-1]/65536.0 ) + (n.power + n.digits.length) * log( 65536 )
+  endif
+
+endfunction 0.0
 
 
 function Int_ToString10( n ref as tInt )
