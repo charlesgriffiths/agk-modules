@@ -346,10 +346,10 @@ n2sign as integer
   remainder = n1
   remainder.sign = 0
   for i = values.length to 0 step -1
-    while Int_GE( remainder, values[i] )
+    if Int_GE( remainder, values[i] )
       remainder = Int_Subtract( remainder, values[i] )
       n = Int_Add( n, adds[i] )
-    endwhile
+    endif
   next i
 
   if n1.sign < 0 then n = Int_Negate( n )
@@ -392,10 +392,10 @@ n2sign as integer
   remainder = n1
   remainder.sign = 0
   for i = values.length to 0 step -1
-    while Int_GE( remainder, values[i] )
+    if Int_GE( remainder, values[i] )
       remainder = Int_Subtract( remainder, values[i] )
       n = Int_Add( n, adds[i] )
-    endwhile
+    endif
   next i
 
   if n1.sign < 0 then remainder = Int_Negate( remainder )
