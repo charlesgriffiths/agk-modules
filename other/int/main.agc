@@ -80,6 +80,8 @@ nlog as tInt
   nlog = Int_Init( 1000000 )
   print( "1000000: " + Int_ToString10( nlog ) + " " + str(Int_Log(nlog),2) + " " + str(log(1000000),2))
 
+  print("")
+  print( "2^"+str(loops) + " " + Int_ToString10( Int_Pow( Int_Init(2), loops )))
 
   sync()
 loop
