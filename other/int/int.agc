@@ -360,7 +360,6 @@ n2sign as integer
 endfunction n
 
 
-// works for n2 from about -2 billion to +2 billion, outside that range use Int_Divide()
 function Int_DivideInt( n1 ref as tInt, n2 as integer )
 n as tInt
 
