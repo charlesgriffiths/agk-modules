@@ -60,6 +60,16 @@ function TextOutline_Delete( t ref as tTextOutline )
 endfunction
 
 
+function TextOutline_SetDepth( t ref as tTextOutline, depth as integer )
+
+  SetTextDepth( t.id[0], depth )
+  for i = 1 to t.id.length
+    SetTextDepth( t.id[i], 1+depth )
+  next i
+
+endfunction
+
+
 function TextOutline_SetText( t ref as tTextOutline, text$ as string )
 
   t.text$ = text$
