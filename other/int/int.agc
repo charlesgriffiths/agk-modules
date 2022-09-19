@@ -26,7 +26,7 @@ type tInt
 endtype
 
 
-function Int_Init( value as integer)
+function Int_Init( value as integer )
 n as tInt
 
   if value >= 0
