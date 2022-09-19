@@ -42,6 +42,51 @@ n as tInt
 endfunction n
 
 
+function Int_Init$( value$ as string )
+n as tInt
+
+  for i = 1 to len(value$)
+    char$ = mid( value$, i, 1 )
+    if CompareString( "-", char$ ) and Int_EqualsInt( n, 0 )
+      n.sign = -1
+    else
+      n = Int_MultiplyInt( n, 10 )
+      Int_AddDigit( n, 0, Val(char$))
+    endif
+  next i
+
+endfunction n
+
+
+function Int_Init#( value# as float )
+n as tInt
+sign as integer
+floats# as float[]
+ints as tInt[]
+
+  if value# < 0 then sign = -1
+  value# = Abs( value# )
+
+  ints.insert( Int_Init( 1 ))
+  floats#.insert( 1.0 )
+
+  while value# > floats#[floats#.length]
+    floats#.insert( 2 * floats#[floats#.length] )
+    ints.insert( Int_MultiplyInt( ints[ints.length], 2 ))
+  endwhile
+
+  for i = ints.length to 0 step -1
+    if value# > floats#[i]
+      dec value#, floats#[i]
+      n = Int_Add( n, ints[i] )
+    endif
+  next i
+
+  n.sign = sign
+
+endfunction n
+
+
 function Int_SetPrecision( n ref as tInt, precision as integer )
 
   if precision > 0
@@ -310,6 +355,8 @@ n as tInt
     next j
   next i
 
+  if n1.sign < 0 then n = Int_Negate( n )
+  if n2.sign < 0 then n = Int_Negate( n )
   Int_SetPrecision( n, n1.precision )
 
 endfunction n
