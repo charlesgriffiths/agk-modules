@@ -76,7 +76,7 @@ ints as tInt[]
   endwhile
 
   for i = ints.length to 0 step -1
-    if value# > floats#[i]
+    if value# >= floats#[i]
       dec value#, floats#[i]
       n = Int_Add( n, ints[i] )
     endif
