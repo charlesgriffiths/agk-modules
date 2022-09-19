@@ -31,7 +31,13 @@ n3 as tInt
 
 loops as integer = 0
 
+ninitstring as tInt : ninitstring = Int_Init$( "-1234567890123456789" )
+ninitfloat as tInt : ninitfloat = Int_Init#( 1234567890.123 )
+
 do
+  print( Int_ToString10( ninitstring ))
+  print( Int_ToString10( ninitfloat ))
+
   add = Random( 1, 0xffff ) + (Random( 0, 0x7fff ) << 16)
   n = Int_AddInt( n, add )
   print( Int_ToStringRaw( n ))
