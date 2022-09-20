@@ -24,6 +24,7 @@ type tSliderState
   xrange as integer
   yrange as integer
 
+  bMouseDown as integer
   bActive as integer
   bVisible as integer
   bPinBox as integer
@@ -64,6 +65,40 @@ function Slider_Delete( ss ref as tSliderState )
 endfunction
 
 
+function Slider_SetPosition( ss ref as tSliderState, x# as float, y# as float )
+
+  x = Slider_GetX( ss )
+  y = Slider_GetY( ss )
+  SetSpritePosition( ss.surface, x#, y# )
+  Slider_SetX( ss, x )
+  Slider_SetY( ss, y )
+
+endfunction
+
+
+function Slider_SetHeight( ss ref as tSliderState, height# as float )
+
+  y = Slider_GetY( ss )
+  SetSpriteSize( ss.surface, GetSpriteWidth( ss.surface ), height# )
+  Slider_SetY( ss, y )
+
+endfunction
+
+
+function Slider_SetWidth( ss ref as tSliderState, width# as float )
+
+  x = Slider_GetX( ss )
+  SetSpriteSize( ss.surface, width#, GetSpriteHeight( ss.surface ) )
+  Slider_SetX( ss, x )
+
+endfunction
+
+
+function Slider_IsDragging( ss ref as tSliderState )
+  exitfunction ss.bMouseDown
+endfunction 0
+
+
 // set the pin size of the slider
 function Slider_SetPinSize( ss ref as tSliderState, width# as float, height# as float )
 
@@ -86,6 +121,16 @@ function Slider_SetPinBox( ss ref as tSliderState, bPinBox as integer )
     SetSpriteVisible( ss.pin, 1 )
   endif
 
+endfunction
+
+
+function Slider_SetMaxX( ss ref as tSliderstate, max as integer )
+  ss.xrange = max
+endfunction
+
+
+function Slider_SetMaxY( ss ref as tSliderstate, max as integer )
+  ss.yrange = max
 endfunction
 
 
@@ -196,24 +241,31 @@ updated as integer = 0
     pinx# = GetSpriteX( ss.pin )
     piny# = GetSpriteY( ss.pin )
 
-    if GetSpriteHitTest( ss.surface, x#, y# ) and state
-      xmin# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.pin ) / 2
-      if x# < xmin# then x# = xmin#
-      ymin# = GetSpriteY( ss.surface ) + GetSpriteHeight( ss.pin ) / 2
-      if y# < ymin# then y# = ymin#
-      xmax# = xmin# + GetSpriteWidth( ss.surface ) - GetSpriteWidth( ss.pin )
-      if x# > xmax# then x# = xmax#
-      ymax# = ymin# + GetSpriteHeight( ss.surface ) - GetSpriteHeight( ss.pin )
-      if y# > ymax# then y# = ymax#
+    if not ss.bMouseDown
+      if GetSpriteHitTest( ss.surface, x#, y# ) and pressed then ss.bMouseDown = 1
+    endif
 
-      SetSpritePositionByOffset( ss.pin, x#, y# )
-      if GetSpriteX( ss.pin ) < GetSpriteX( ss.surface ) then SetSpriteX( ss.pin, GetSpriteX( ss.surface ))
-      if GetSpriteY( ss.pin ) < GetSpriteY( ss.surface ) then SetSpriteY( ss.pin, GetSpriteY( ss.surface ))
-      updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
+    if ss.bMouseDown
+      if GetSpriteHitTest( ss.surface, x#, y# ) and state
+        xmin# = GetSpriteX( ss.surface ) + GetSpriteWidth( ss.pin ) / 2
+        if x# < xmin# then x# = xmin#
+        ymin# = GetSpriteY( ss.surface ) + GetSpriteHeight( ss.pin ) / 2
+        if y# < ymin# then y# = ymin#
+        xmax# = xmin# + GetSpriteWidth( ss.surface ) - GetSpriteWidth( ss.pin )
+        if x# > xmax# then x# = xmax#
+        ymax# = ymin# + GetSpriteHeight( ss.surface ) - GetSpriteHeight( ss.pin )
+        if y# > ymax# then y# = ymax#
+
+        SetSpritePositionByOffset( ss.pin, x#, y# )
+        if GetSpriteX( ss.pin ) < GetSpriteX( ss.surface ) then SetSpriteX( ss.pin, GetSpriteX( ss.surface ))
+        if GetSpriteY( ss.pin ) < GetSpriteY( ss.surface ) then SetSpriteY( ss.pin, GetSpriteY( ss.surface ))
+        updated = pinx# <> GetSpriteX( ss.pin ) or piny# <> GetSpriteY( ss.pin )
+      endif
     endif
   endif
 
-  if ss.bPinBox
+  if ss.bVisible and ss.bPinBox
+    SetSpriteVisible( ss.pin, 0 )
     color = MakeColor( GetSpriteColorRed( ss.pin ), GetSpriteColorGreen( ss.pin ), GetSpriteColorBlue( ss.pin ))
     x# = GetSpriteX( ss.pin ) - 1
     y# = GetSpriteY( ss.pin ) - 1
@@ -226,14 +278,42 @@ updated as integer = 0
     DrawBox( x#, y#, x2#, y2#, color, color, color, color, 0 )
   endif
 
+  if not state then ss.bMouseDown = 0
+
 endfunction updated
+
+
+function Slider_GetPinMiddleX( ss ref as tSliderState )
+  x# = GetSpriteX( ss.pin ) + 0.5 * GetSpriteWidth( ss.pin )
+endfunction x#
+
+function Slider_GetPinLeftX( ss ref as tSliderState )
+  x# = GetSpriteX( ss.pin )
+endfunction x#
+
+function Slider_GetPinRightX( ss ref as tSliderState )
+  x# = GetSpriteX( ss.pin ) + GetSpriteWidth( ss.pin )
+endfunction x#
+
+function Slider_GetPinMiddleY( ss ref as tSliderState )
+  y# = GetSpriteY( ss.pin ) + 0.5 * GetSpriteHeight( ss.pin )
+endfunction y#
+
+function Slider_GetPinTopY( ss ref as tSliderState )
+  y# = GetSpriteY( ss.pin )
+endfunction y#
+
+function Slider_GetPinBottomY( ss ref as tSliderState )
+  y# = GetSpriteY( ss.pin ) + GetSpriteHeight( ss.pin )
+endfunction y#
+
 
 
 // set slider to visible or invisible
 function Slider_SetVisible( ss ref as tSliderState, bVisible as integer )
 
   ss.bVisible = bVisible
-  Slider_SetActive( ss, bVisible )
+  if not bVisible then Slider_SetActive( ss, 0 )
 
   SetSpriteVisible( ss.surface, bVisible )
   SetSpriteVisible( ss.pin, bVisible )
@@ -243,11 +323,22 @@ endfunction
 
 // enable/disable the slider
 function Slider_SetActive( ss ref as tSliderState, bActive as integer )
+
+  if bActive then Slider_SetVisible( ss, 1 )
   ss.bActive = bActive
+
+endfunction
+
+
+function Slider_Show( ss ref as tSliderState, bShow as integer )
+
+  Slider_SetActive( ss, bShow )
+  Slider_SetVisible( ss, bShow )
+
 endfunction
 
 
 function Slider_DrawBox( ss ref as tSliderState, color as integer )
-  DrawBox( GetSpriteX( ss.surface ), GetSpriteY( ss.surface ), GetSpriteX( ss.surface ) + GetSpriteWidth( ss.surface ), GetSpriteY( ss.surface ) + GetSpriteHeight( ss.surface ), color, color, color, color, 0 )
+  if ss.bVisible then DrawBox( GetSpriteX( ss.surface ), GetSpriteY( ss.surface ), GetSpriteX( ss.surface ) + GetSpriteWidth( ss.surface ), GetSpriteY( ss.surface ) + GetSpriteHeight( ss.surface ), color, color, color, color, 0 )
 endfunction
 
