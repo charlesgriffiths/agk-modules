@@ -181,8 +181,8 @@ defaultok as integer = 0
 
   shade = CreateSprite( 0 )
   SetSpriteColorAlpha( shade, 64 )
-  SetSpriteSize( shade, GetVirtualWidth(), GetVirtualHeight())
-  SetSpritePosition( shade, 0, 0 )
+  SetSpriteSize( shade, (GetScreenBoundsRight()-GetScreenBoundsLeft())*2, (GetScreenBoundsBottom()-GetScreenBoundsTop())*2)
+  SetSpritePosition( shade, GetScreenBoundsLeft(), GetScreenBoundsTop() )
   FixSpriteToScreen( shade, 1 )
   SetSpriteDepth( shade, 3 )
 
