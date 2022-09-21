@@ -23,11 +23,12 @@
 #constant Menu_ChangeAlpha 2
 #constant Menu_ChangeColor 3
 #constant Menu_ChangePosition 4
-#constant Menu_Hover 5
-#constant Menu_Pressed 6
-#constant Menu_Center 7
-#constant Menu_AlignLeft 8
-#constant Menu_AlignRight 9
+#constant Menu_ChangeTextColor 5
+#constant Menu_Hover 6
+#constant Menu_Pressed 7
+#constant Menu_Center 8
+#constant Menu_AlignLeft 9
+#constant Menu_AlignRight 10
 
 
 type tMenuItem
@@ -35,6 +36,7 @@ type tMenuItem
   hoversprite as integer
   pressedsprite as integer
   text as integer
+  textcolor as integer
 endtype
 
 
@@ -61,6 +63,7 @@ type tMenuState
 
   bActive as integer
   bVisible as integer
+  bScissorText as integer
 endtype
 
 
@@ -93,6 +96,7 @@ ypos# as float
 
   m.bActive = 1
   m.bVisible = 1
+  m.bScissorText = 1
 
 endfunction m
 
@@ -125,13 +129,14 @@ function Menu_SetText( m ref as tMenuState, index as integer, text$ as string, s
     SetTextDepth( id, m.depth-1 )
     SetTextSize( id, size )
     SetTextColor( id, GetColorRed( color ), GetColorGreen( color ), GetColorBlue( color ), GetColorAlpha( color ))
+    m.list[index].textcolor = color
     twidth# = GetTextTotalWidth( id )
     theight# = GetTextTotalHeight( id )
     x# = GetSpriteX( m.list[index].normalsprite )
     y# = GetSpriteY( m.list[index].normalsprite )
     swidth# = GetSpriteWidth( m.list[index].normalsprite )
     sheight# = GetSpriteHeight( m.list[index].normalsprite )
-    SetTextScissor( id, x#, y#, x# + swidth#, y# + sheight# )
+    if m.bScissorText then SetTextScissor( id, x#, y#, x# + swidth#, y# + sheight# )
     m.list[index].text = id
 
     select justify
@@ -180,18 +185,22 @@ choice as integer = -1
 
   for i = 0 to m.list.length
     sprite = m.list[i].normalsprite
+    color = m.list[i].textcolor
 
     if GetSpriteHitTest( sprite, x#, y# )
       if state
         if 0 = m.list[i].pressedsprite then m.list[i].pressedsprite = Menu_Transform( sprite, m.pressedchange )
         sprite = m.list[i].pressedsprite
+        if m.list[i].text then color = Menu_TransformTextColor( color, m.pressedchange )
       else
         if 0 = m.list[i].hoversprite then m.list[i].hoversprite = Menu_Transform( sprite, m.hoverchange )
         sprite = m.list[i].hoversprite
+        if m.list[i].text then color = Menu_TransformTextColor( color, m.hoverchange )
       endif
 
       if m.bActive and released then choice = i
     endif
+    if m.list[i].text then SetTextColor( m.list[i].text, GetColorRed( color ), GetColorGreen( color ), GetColorBlue( color ), GetColorAlpha( color ))
 
     if m.list[i].normalsprite then SetSpriteVisible( m.list[i].normalsprite, 0 )
     if m.list[i].hoversprite then SetSpriteVisible( m.list[i].hoversprite, 0 )
@@ -201,6 +210,20 @@ choice as integer = -1
   next i
 
 endfunction choice
+
+
+function Menu_RefreshTransformSprites( m ref as tMenuState )
+
+  for i = 0 to m.list.length
+    sprite = m.list[i].normalsprite
+    
+    if m.list[i].pressedsprite then DeleteSprite( m.list[i].pressedsprite )
+    m.list[i].pressedsprite = Menu_Transform( sprite, m.pressedchange )
+    if m.list[i].hoversprite then DeleteSprite( m.list[i].hoversprite )
+    m.list[i].hoversprite = Menu_Transform( sprite, m.hoverchange )
+  next i
+
+endfunction
 
 
 // internal. changes sprite by instructions in change
@@ -228,6 +251,20 @@ function Menu_Transform( sprite as integer, change ref as tMenuChange[] )
   next i
 
 endfunction sprite
+
+
+// internal. changes text color by instructions in change
+function Menu_TransformTextColor( color as integer, change ref as tMenuChange[] )
+
+  for i = 0 to change.length
+    select change[i].changefunction
+      case Menu_ChangeTextColor:
+        color = MakeColor( change[i].r, change[i].g, change[i].b, change[i].a )
+      endcase
+    endselect
+  next i
+
+endfunction color
 
 
 // remove sprite transform instructions
@@ -302,6 +339,25 @@ mc as tMenuChange
 endfunction
 
 
+// add a transform change to text color
+function Menu_AddTransformTextColor( m ref as tMenuState, transform as integer, dr as integer, dg as integer, db as integer, da as integer )
+mc as tMenuChange
+
+  mc.changefunction = Menu_ChangeTextColor
+  mc.r = dr
+  mc.g = dg
+  mc.b = db
+  mc.a = da
+
+  if Menu_Hover = transform
+    m.hoverchange.insert( mc )
+  elseif Menu_Pressed = transform
+    m.pressedchange.insert( mc )
+  endif
+
+endfunction
+
+
 // add a transform change to position
 function Menu_AddTransformPosition( m ref as tMenuState, transform as integer, dx# as float, dy# as float )
 mc as tMenuChange
@@ -357,8 +413,22 @@ function Menu_SetActive( m ref as tMenuState, bActive as integer )
 endfunction
 
 
+// turn text scissoring on/off
+function Menu_SetScissorText( m ref as tMenuState, bScissorText as integer )
+
+  m.bScissorText = bScissorText
+  
+  if 0 = bScissorText
+    for i = 0 to m.list.length
+      if m.list[i].text then SetTextScissor( m.list[i].text, 0, 0, 0, 0 )
+    next i
+  endif
+
+endfunction
+
+
 // draw a box around the menu area
-function Menu_DrawOutline( m ref as tMenuState, color as integer )
+function Menu_DrawBox( m ref as tMenuState, color as integer )
 width# as float = 0
 height# as float = 0
 
