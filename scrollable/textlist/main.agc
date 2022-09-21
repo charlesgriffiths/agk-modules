@@ -31,23 +31,32 @@ tl as tTextListState
   for i = 2 to 20
     TextList_AppendLine( tl, "Text: " + str( i ) )
   next i
+  
+  for i = 0 to 20
+    TextList_SetAltText( tl, "Alt Text " + str(i), i )
+  next i
 
   TextList_AppendLine( tl, "This is a text. A very long line. A very very very very very very very very very very long long line." )
 
-  TextList_SetSelectedBackgroundColor( tl, MakeColor( 255, 128, 0 ))
-  TextList_SetSelected( tl, 1 )
-  TextList_SetSelected( tl, 21 )
+  TextList_SetSelectedBackgroundColor( tl, MakeColor( 255, 128, 0, 255 ))
   TextList_SetClickToSelect( tl, 1 )
+  TextList_SetSelectedBackground( tl, 0 )
+  TextList_SetSelectedAltText( tl, 1 )
 //  TextList_SetScrollWheelAnywhere( tl, 0 )
 
 //  TextList_Delete( tl )
 
+  TextList_SetSelected( tl, 1 )
+  TextList_SetSelected( tl, 21 )
+
+  TextList_SetSelectOnlyOne( tl, 1 )
 
   do
-    TextList_DrawOutline( tl, MakeColor( 255, 255, 255 ))
+    TextList_DrawBox( tl, MakeColor( 255, 255, 255 ))
     TextList_UpdateMouse( tl )
 tl.bRedisplay = 1  // may need to redisplay when window is resized
 
+/*
     if TextList_GetSelected( tl, 1 )
       print( "index 1 is selected" )
     else
@@ -59,11 +68,14 @@ tl.bRedisplay = 1  // may need to redisplay when window is resized
     else
       print( "index 2 is not selected" )
     endif
+/**/
     print( "selected: " + intarraytostring( tl.selected ) )
-
+    if tl.selected.length >= 0 then print( TextList_GetSelected( tl, tl.selected[0] ))
 
     Print( ScreenFPS() )
     Print( str(tl.topindex) + " " + str( tl.scrolloffset# ) + " " + str( tl.bScrollingUp ) + " " + str( tl.bShowLastLine ))
+    print( "bSelectedBackground " + str( tl.bSelectedBackground ))
+    print( "bSelectedAltText " + str( tl.bSelectedAltText ))
     Sync()
   loop
 
