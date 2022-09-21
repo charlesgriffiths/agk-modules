@@ -74,8 +74,8 @@ choice2 as integer = -1
     if ret2 <> -1 then choice2 = ret2
 
     color = MakeColor( 255, 0, 0 )
-    Menu_DrawOutline( m, color )
-    Menu_DrawOutline( m2, color )
+    Menu_DrawBox( m, color )
+    Menu_DrawBox( m2, color )
 
 //  Menu_SetVisible( m, 0 )
 //  Menu_SetVisible( m2, 1 )
