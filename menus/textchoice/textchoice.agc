@@ -32,6 +32,7 @@ type tTextChoiceState
   columns as integer
   verticalspacing# as float
   horizontalspacing# as float
+  depth as integer
 
   selected as integer[]
   normalcolor as integer
@@ -39,7 +40,10 @@ type tTextChoiceState
 
   bBoldSelected as integer
   bSelectOnlyOne as integer
+  bColumnFirst as integer
   bReposition as integer
+  bActive as integer
+  bVisible as integer
 endtype
 
 
@@ -56,11 +60,14 @@ tc as tTextChoiceState
   tc.columns = columns
   tc.verticalspacing# = verticalspacing#
   tc.horizontalspacing# = horizontalspacing#
+  tc.depth = 8
   tc.normalcolor = MakeColor( 255, 255, 255, 255 )
   tc.selectedcolor = MakeColor( 0, 255, 0, 255 )
   tc.bBoldSelected = 1
   tc.bReposition = 0
   tc.bSelectOnlyOne = 0
+  tc.bActive = 1
+  tc.bVisible = 1
 
 endfunction tc
 
@@ -94,6 +101,21 @@ function TextChoice_AddChoices( tc ref as tTextChoiceState, choices$ ref as stri
 endfunction
 
 
+function TextChoice_GetCountChoices( tc ref as tTextChoiceState )
+endfunction tc.items.length + 1
+
+
+function TextChoice_ModifyChoice( tc ref as tTextChoiceState, index as integer, choice$ as string )
+
+  if index >= 0 and index <= tc.items.length
+    tc.items[index].choice$ = choice$
+    SetTextString( tc.items[index].text, choice$ )
+    tc.bReposition = 1
+  endif
+
+endfunction
+
+
 // remove all choices from the list
 function TextChoice_ClearChoices( tc ref as tTextChoiceState )
 
@@ -118,56 +140,136 @@ function TextChoice_Update( tc ref as tTextChoiceState, x# as float, y# as float
 updated as integer = 0
 columnwidth# as float[]
 rowheight# as float = 0
+columnitems as integer[]
 
-  if tc.bReposition
+  if tc.bReposition and tc.bActive and tc.bVisible
     columnwidth#.length = tc.columns-1
     tc.bReposition = 0
 
-    for i = 0 to tc.items.length
-      column = mod( i, tc.columns )
-      SetTextString( tc.items[i].text, tc.items[i].choice$ )
-      SetTextBold( tc.items[i].text, 0 )
-      SetTextColor( tc.items[i].text, GetColorRed( tc.normalcolor ), GetColorGreen( tc.normalcolor ), GetColorBlue( tc.normalcolor ), GetColorAlpha( tc.normalcolor ))
-      width# = GetTextTotalWidth( tc.items[i].text ) + tc.horizontalspacing#
-      if columnwidth#[column] < width# then columnwidth#[column] = width#
-    next i
+    if tc.bColumnFirst
+      columnitems.length = tc.columns-1
+      for i = 0 to tc.items.length
+        inc columnitems[mod( i, tc.columns )]
+      next i
 
-    rowheight# = tc.textsize# + tc.verticalspacing#
-    textx# = tc.x#
-    texty# = tc.y#
-    for i = 0 to tc.items.length
-      column = mod( i, tc.columns )
-      if i > 0 and 0 = column
-        textx# = tc.x#
-        texty# = texty# + rowheight#
-      elseif column > 0
-        textx# = textx# + columnwidth#[column-1]
-      endif
-      
-      SetTextPosition( tc.items[i].text, textx#, texty# )
-    next i
-    
+      column = 0
+      row = 0
+      for i = 0 to tc.items.length
+        SetTextString( tc.items[i].text, tc.items[i].choice$ )
+        SetTextBold( tc.items[i].text, 0 )
+        SetTextColor( tc.items[i].text, GetColorRed( tc.normalcolor ), GetColorGreen( tc.normalcolor ), GetColorBlue( tc.normalcolor ), GetColorAlpha( tc.normalcolor ))
+        SetTextDepth( tc.items[i].text, tc.depth )
+        width# = GetTextTotalWidth( tc.items[i].text ) + tc.horizontalspacing#
+        if columnwidth#[column] < width# then columnwidth#[column] = width#
+
+        inc row
+        if row >= columnitems[column]
+          row = 0
+          inc column
+        endif
+      next i
+
+      rowheight# = tc.textsize# + tc.verticalspacing#
+      textx# = tc.x#
+      texty# = tc.y#
+
+      column = 0
+      row = 0
+      for i = 0 to tc.items.length
+        if i > 0 and 0 = row
+          textx# = textx# + columnwidth#[column-1]
+        endif
+
+        SetTextPosition( tc.items[i].text, textx#, tc.y# + row * rowheight# )
+        inc row
+        if row >= columnitems[column]
+          row = 0
+          inc column
+        endif
+      next i
+
+    else
+
+      for i = 0 to tc.items.length
+        column = mod( i, tc.columns )
+        SetTextString( tc.items[i].text, tc.items[i].choice$ )
+        SetTextBold( tc.items[i].text, 0 )
+        SetTextColor( tc.items[i].text, GetColorRed( tc.normalcolor ), GetColorGreen( tc.normalcolor ), GetColorBlue( tc.normalcolor ), GetColorAlpha( tc.normalcolor ))
+        width# = GetTextTotalWidth( tc.items[i].text ) + tc.horizontalspacing#
+        if columnwidth#[column] < width# then columnwidth#[column] = width#
+      next i
+
+      rowheight# = tc.textsize# + tc.verticalspacing#
+      textx# = tc.x#
+      texty# = tc.y#
+      for i = 0 to tc.items.length
+        column = mod( i, tc.columns )
+        if i > 0 and 0 = column
+          textx# = tc.x#
+          texty# = texty# + rowheight#
+        elseif column > 0
+          textx# = textx# + columnwidth#[column-1]
+        endif
+
+        SetTextPosition( tc.items[i].text, textx#, texty# )
+      next i
+
+    endif    
+
     for i = 0 to tc.selected.length
       SetTextColor( tc.items[tc.selected[i]].text, GetColorRed( tc.selectedcolor ), GetColorGreen( tc.selectedcolor ), GetColorBlue( tc.selectedcolor ), GetColorAlpha( tc.selectedcolor ))
       if tc.bBoldSelected then SetTextBold( tc.items[tc.selected[i]].text, 1 )
     next i
   endif
 
-  for i = 0 to tc.items.length
-    if pressed
-      if GetTextHitTest( tc.items[i].text, x#, y# )
-        if TextChoice_IsItemSelected( tc, i )
-          TextChoice_SetUnselected( tc, i )
-        else
-          TextChoice_SetSelected( tc, i )
+  if tc.bActive
+    for i = 0 to tc.items.length
+      if pressed
+        if GetTextHitTest( tc.items[i].text, x#, y# )
+          if TextChoice_IsItemSelected( tc, i )
+            TextChoice_SetUnselected( tc, i )
+          else
+            TextChoice_SetSelected( tc, i )
+          endif
+          updated = 1
         endif
-        updated = 1
       endif
-    endif
-    
-  next i
+    next i
+  endif
 
 endfunction updated
+
+
+// get the text of a selected item
+function TextChoice_GetFirstSelectedText( tc ref as tTextChoiceState )
+  if tc.selected.length >= 0 then exitfunction TextChoice_GetText( tc, tc.selected[0] )
+endfunction ""
+
+
+function TextChoice_GetFirstSelectedIndex( tc ref as tTextChoiceState )
+  if tc.selected.length >= 0 then exitfunction tc.selected[0]
+endfunction -1
+
+
+// get the index of a choice
+function TextChoice_GetIndexOf( tc ref as tTextChoiceState, text$ as string )
+
+  for i = 0 to tc.items.length
+    if CompareString( text$, tc.items[i].choice$ ) then exitfunction i
+  next i
+
+endfunction -1
+
+
+// get the text of an item
+function TextChoice_GetText( tc ref as tTextChoiceState, index as integer )
+text$ as string = ""
+
+  if index >= 0 and index <= tc.items.length
+    text$ = tc.items[index].choice$
+  endif
+
+endfunction text$
 
 
 // is this item selected?
@@ -178,6 +280,14 @@ function TextChoice_IsItemSelected( tc ref as tTextChoiceState, index as integer
   next i
 
 endfunction 0
+
+
+function TextChoice_GetSelected( tc ref as tTextChoiceState, index as integer )
+bSelected as integer
+
+  bSelected = TextChoice_IsItemSelected( tc, index )
+
+endfunction bSelected
 
 
 // set this item to selected
@@ -239,6 +349,14 @@ function TextChoice_SetSelectOnlyOne( tc ref as tTextChoiceState, bValue as inte
     endif
     tc.bSelectOnlyOne = 1
   endif
+
+endfunction
+
+
+function TextChoice_SetDepth( tc ref as tTextChoiceState, depth as integer )
+
+  tc.depth = depth
+  tc.bReposition = 1
 
 endfunction
 
@@ -313,6 +431,41 @@ function TextChoice_SetPosition( tc ref as tTextChoiceState, x# as float, y# as 
   tc.x# = x#
   tc.y# = y#
   tc.bReposition = 1
+
+endfunction
+
+
+function TextChoice_GetWidth( tc ref as tTextChoiceState )
+edge# as float
+max# as float
+
+  for i = 0 to tc.items.length
+    edge# = GetTextX( tc.items[i].text ) + GetTextTotalWidth( tc.items[i].text )
+    if edge# > max# then max# = edge#
+  next i
+
+endfunction max# - tc.x#
+
+
+function TextChoice_SetActive( tc ref as tTextChoiceState, bActive as integer )
+  tc.bActive = bActive
+endfunction
+
+
+function TextChoice_SetVisible( tc ref as tTextChoiceState, bVisible as integer )
+
+  for i = 0 to tc.items.length
+    if tc.items[i].text then SetTextVisible( tc.items[i].text, bVisible )
+  next i
+  tc.bVisible = bVisible
+
+endfunction
+
+
+function TextChoice_Show( tc ref as tTextChoiceState, bShow as integer )
+
+  TextChoice_SetActive( tc, bShow )
+  TextChoice_SetVisible( tc, bShow )
 
 endfunction
 
