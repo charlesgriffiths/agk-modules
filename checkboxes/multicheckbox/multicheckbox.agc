@@ -120,10 +120,20 @@ function MultiCheckBox_FixSpriteToScreen( mc ref as tMultiCheckBoxState, mode as
 endfunction
 
 
+// set the display depth of the multicheckbox
+function MultiCheckBox_SetDepth( mc ref as tMultiCheckBoxState, depth as integer )
+
+  for i = 0 to mc.sprites.length
+    SetSpriteDepth( mc.sprites[i], depth )
+  next i
+
+endfunction
+
+
 // set multicheckbox to visible or invisible
 function MultiCheckBox_SetVisible( mc ref as tMultiCheckBoxState, bVisible as integer )
 
-  MultiCheckBox_SetActive( mc, bVisible )
+  if not bVisible then MultiCheckBox_SetActive( mc, 0 )
 
   if bVisible
     MultiCheckBox_SetState( mc, mc.selected )
@@ -138,16 +148,17 @@ endfunction
 
 // enable/disable the multicheckbox
 function MultiCheckBox_SetActive( mc ref as tMultiCheckBoxState, bActive as integer )
+
   mc.bActive = bActive
+  if bActive then MultiCheckBox_SetVisible( mc, 1 )
+
 endfunction
 
 
-// set the display depth of the multicheckbox
-function MultiCheckBox_SetDepth( mc ref as tMultiCheckBoxState, depth as integer )
+function MultiCheckBox_Show( mc ref as tMultiCheckBoxState, bShow as integer )
 
-  for i = 0 to mc.sprites.length
-    SetSpriteDepth( mc.sprites[i], depth )
-  next i
+  MultiCheckBox_SetActive( mc, bShow )
+  MultiCheckBox_SetVisible( mc, bShow )
 
 endfunction
 
