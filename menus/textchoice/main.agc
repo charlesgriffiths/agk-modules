@@ -29,13 +29,14 @@ UseNewDefaultFonts( 1 )
 tc as tTextChoiceState
 
   tc = TextChoice_Init( 100, 300, 30, 3, 10, 15 )
+//  tc.bColumnFirst = 1
   TextChoice_AddChoice( tc, "Paladin" )
   TextChoice_AddChoice( tc, "Monk" )
   TextChoice_AddChoice( tc, "Ninja" )
   TextChoice_AddChoice( tc, "Thief" )
   TextChoice_AddChoice( tc, "Wizard" )
   TextChoice_AddChoice( tc, "Talented" )
-
+//  TextChoice_AddChoice( tc, "Extra" )
   TextChoice_SetSelectOnlyOne( tc, 1 )
 
 
@@ -58,10 +59,14 @@ tc2 as tTextChoiceState
 
 //  TextChoice_ClearChoices( tc2 )
 
+count as integer = 0
 
   do
     TextChoice_UpdateMouse( tc )
     TextChoice_UpdateMouse( tc2 )
+    
+    inc count
+    TextChoice_ModifyChoice( tc, 0, "Paladin " + str( count ))
 
     Print( ScreenFPS() )
     Print( intarraytostring( tc.selected ))
