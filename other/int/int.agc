@@ -25,6 +25,14 @@ type tInt
   precision as integer
 endtype
 
+type tIntBase
+  digits as integer[]
+  power as integer
+  sign as integer
+  precision as integer
+  base as integer
+endtype
+
 
 function Int_Init( value as integer )
 n as tInt
@@ -538,6 +546,43 @@ s$ as string = ""
 endfunction s$
 
 
+function Int_ConvertBase( n ref as tInt, base as integer, precision as integer )
+values as tInt[]
+remainder as tInt
+conversion as tIntBase
+
+  conversion.sign = n.sign
+  if precision < 1 then precision = 1
+  conversion.digits.length = precision-1
+  conversion.precision = precision
+  conversion.base = base
+
+  values.insert( Int_Init( 1 ))
+  while Int_GT( n, values[values.length] )
+    values.insert( Int_MultiplyInt( values[values.length], base ))
+  endwhile
+
+  remainder = n
+  remainder.sign = 0
+
+digit as integer = 0
+
+  for i = values.length to 0 step -1
+    while Int_GE( remainder, values[i] )
+      remainder = Int_Subtract( remainder, values[i] )
+      inc conversion.digits[digit]
+    endwhile
+    if i > 0 and (digit > 0 or conversion.digits[digit] > 0) then inc digit
+    if digit > conversion.digits.length
+      conversion.power = i
+      exit
+    endif
+  next i
+  if digit < conversion.digits.length then conversion.digits.length = digit
+
+endfunction conversion
+
+
 function Int_ToStringRaw( n ref as tInt )
 s$ as string
 
@@ -547,6 +592,20 @@ s$ as string
     s$ = s$ + str( n.digits[i] ) + " "
   next i
   s$ = s$ + "e" + str(n.power)
+
+endfunction s$
+
+
+function Int_ToStringRawB( n ref as tIntBase )
+s$ as string
+
+  if n.sign < 0 then s$ = "- "
+  s$ = s$ + "precision: " + str(n.precision) + " "
+  s$ = s$ + "base: " + str(n.base) + " ("
+  for i = 0 to n.digits.length
+    s$ = s$ + str( n.digits[i] ) + " "
+  next i
+  s$ = s$ + ") e" + str(n.power)
 
 endfunction s$
 
