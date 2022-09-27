@@ -601,7 +601,7 @@ s$ as string
 
   if n.sign < 0 then s$ = "- "
   s$ = s$ + "precision: " + str(n.precision) + " "
-  s$ = s$ + "base: " + str(n.base) + " ("
+  s$ = s$ + "base: " + str(n.base) + " ( "
   for i = 0 to n.digits.length
     s$ = s$ + str( n.digits[i] ) + " "
   next i
