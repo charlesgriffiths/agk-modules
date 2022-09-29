@@ -21,16 +21,16 @@
 type tInt
   digits as integer[]
   power as integer
-  sign as integer
   precision as integer
+  bNegative as integer
 endtype
 
 type tIntBase
   digits as integer[]
   power as integer
-  sign as integer
   precision as integer
   base as integer
+  bNegative as integer
 endtype
 
 
@@ -44,7 +44,7 @@ n as tInt
     Int_AddDigit( n, 0, Abs(part))
     dec value, part
     Int_AddDigit( n, 0, Abs(value))
-    n.sign = -1
+    n.bNegative = 1
   endif
 
 endfunction n
@@ -56,7 +56,7 @@ n as tInt
   for i = 1 to len(value$)
     char$ = mid( value$, i, 1 )
     if CompareString( "-", char$ ) and Int_EqualsInt( n, 0 )
-      n.sign = -1
+      n.bNegative = 1
     else
       n = Int_MultiplyInt( n, 10 )
       Int_AddDigit( n, 0, Val(char$))
@@ -68,11 +68,11 @@ endfunction n
 
 function Int_Init#( value# as float )
 n as tInt
-sign as integer
+bNegative as integer
 floats# as float[]
 ints as tInt[]
 
-  if value# < 0 then sign = -1
+  if value# < 0 then bNegative = 1
   value# = Abs( value# )
 
   ints.insert( Int_Init( 1 ))
@@ -90,7 +90,7 @@ ints as tInt[]
     endif
   next i
 
-  n.sign = sign
+  n.bNegative = bNegative
 
 endfunction n
 
@@ -208,6 +208,7 @@ digit as integer = 0
 endfunction digit
 
 
+// todo: ignore digits that are insigificant to n's precision
 function Int_AddDigit( n ref as tInt, place as integer, value as integer )
 
   if value
@@ -246,11 +247,7 @@ function Int_Negate( n ref as tInt )
 neg as tInt
 
   neg = n
-  if neg.sign >= 0
-    neg.sign = -1
-  else
-    neg.sign = 0
-  endif
+  neg.bNegative = not n.bNegative
 
 endfunction neg
 
@@ -258,27 +255,27 @@ endfunction neg
 function Int_Add( n1 ref as tInt, n2 ref as tInt )
 n as tInt
 
-  if n1.sign < 0 and n2.sign < 0  // both negative
+  if n1.bNegative and n2.bNegative  // both negative
   a as tInt
   b as tInt
 
-    a = n1 : a.sign = 0
-    b = n2 : b.sign = 0
+    a = n1 : a.bNegative = 0
+    b = n2 : b.bNegative = 0
     n = Int_Add( a, b )
-    n.sign = -1
+    n.bNegative = 1
     exitfunction n
   endif
 
-  if n1.sign < 0 and n2.sign >= 0  // negative adding positive
+  if n1.bNegative and not n2.bNegative  // negative adding positive
     n = n1
-    n.sign = 0
+    n.bNegative = 0
     n = Int_Subtract( n, n2 )
     exitfunction Int_Negate( n )
   endif
 
-  if n2.sign < 0  // positive adding negative
+  if n2.bNegative   // positive adding negative
     n = n2
-    n.sign = 0
+    n.bNegative = 0
     exitfunction Int_Subtract( n1, n )
   endif
 
@@ -303,31 +300,32 @@ endfunction n
 function Int_Subtract( n1 ref as tInt, n2 ref as tInt )
 n as tInt
 
-  if n1.sign < 0 and n2.sign < 0  // both negative
+  if n1.bNegative and n2.bNegative  // both negative
   a as tInt
   b as tInt
 
-    a = n1 : a.sign = 0
-    b = n2 : b.sign = 0
+    a = n1 : a.bNegative = 0
+    b = n2 : b.bNegative = 0
     n = Int_Subtract( a, b )
-    exitfunction Int_Negate( n )
-  endif
-
-  if n1.sign < 0 and n2.sign >= 0  // negative subtracting positive
-    n = n1
-    n.sign = 0
-    n = Int_Add( n, n2 )
-    n.sign = -1
+    n.bNegative = not n.bNegative
     exitfunction n
   endif
 
-  if n2.sign < 0  // positive subtracting negative
+  if n1.bNegative and not n2.bNegative  // negative subtracting positive
+    n = n1
+    n.bNegative = 0
+    n = Int_Add( n, n2 )
+    n.bNegative = 1
+    exitfunction n
+  endif
+
+  if n2.bNegative  // positive subtracting negative
     n = n2
-    n.sign = 0
+    n.bNegative = 0
     exitfunction Int_Add( n1, n )
   endif
 
-  // n1.sign >= 0 and n2.sign >= 0
+  // not n1.bNegative and not n2.bNegative
   if Int_GE( n1, n2 )    // both positive
     n = n1
     for i = 0 to n2.digits.length
@@ -336,7 +334,7 @@ n as tInt
     Int_SetPrecision( n, n1.precision )
   else
     n = Int_Subtract( n2, n1 )
-    n.sign = -1
+    n.bNegative = 1
   endif
 
 endfunction n
@@ -363,8 +361,8 @@ n as tInt
     next j
   next i
 
-  if n1.sign < 0 then n = Int_Negate( n )
-  if n2.sign < 0 then n = Int_Negate( n )
+  if n1.bNegative then n.bNegative = not n.bNegative
+  if n2.bNegative then n.bNegative = not n.bNegative
   Int_SetPrecision( n, n1.precision )
 
 endfunction n
@@ -383,13 +381,11 @@ n as tInt
 values as tInt[]
 adds as tInt[]
 remainder as tInt
-n2sign as integer
+n2negative as integer
 
   if Int_EqualsInt( n2, 0 ) then exitfunction n
-  if n2.sign < 0
-    n2sign = -1
-    n2.sign = 0
-  endif
+  n2negative = n2.bNegative
+  n2.bNegative = 0
 
   values.insert( n2 )
   adds.insert( Int_Init( 1 ))
@@ -399,7 +395,7 @@ n2sign as integer
   endwhile
 
   remainder = n1
-  remainder.sign = 0
+  remainder.bNegative = 0
   for i = values.length to 0 step -1
     if Int_GE( remainder, values[i] )
       remainder = Int_Subtract( remainder, values[i] )
@@ -407,8 +403,8 @@ n2sign as integer
     endif
   next i
 
-  if n1.sign < 0 then n = Int_Negate( n )
-  if n2sign < 0 then n = Int_Negate( n )
+  if n1.bNegative then n.bNegative = not n.bNegative
+  if n2negative then n.bNegative = not n.bNegative
 
   Int_SetPrecision( n, n1.precision )
 
@@ -428,13 +424,11 @@ n as tInt
 values as tInt[]
 adds as tInt[]
 remainder as tInt
-n2sign as integer
+n2negative as integer
 
   if Int_EqualsInt( n2, 0 ) then exitfunction n
-  if n2.sign < 0
-    n2sign = -1
-    n2.sign = 0
-  endif
+  n2negative = 1
+  n2.bNegative = 0
 
   values.insert( n2 )
   adds.insert( Int_Init( 1 ))
@@ -444,7 +438,7 @@ n2sign as integer
   endwhile
 
   remainder = n1
-  remainder.sign = 0
+  remainder.bNegative = 0
   for i = values.length to 0 step -1
     if Int_GE( remainder, values[i] )
       remainder = Int_Subtract( remainder, values[i] )
@@ -452,8 +446,8 @@ n2sign as integer
     endif
   next i
 
-  if n1.sign < 0 then remainder = Int_Negate( remainder )
-  if n2sign < 0 then remainder = Int_Negate( remainder )
+  if n1.bNegative < 0 then remainder.bNegative = not remainder.bNegative
+  if n2negative then remainder.bNegative = not remainder.bNegative
 
 endfunction remainder
 
@@ -518,7 +512,7 @@ remainder as tInt
   endwhile
 
   remainder = n
-  remainder.sign = 0
+  remainder.bNegative = 0
   digits.length = values.length
   for i = values.length to 0 step -1
     while Int_GE( remainder, values[i] )
@@ -537,7 +531,7 @@ remainder as tInt
 
 s$ as string = ""
 
-  if n.sign < 0 then s$ = "-"
+  if n.bNegative then s$ = "-"
 
   for i = digits.length to 0 step -1
     s$ = s$ + str(digits[i])
@@ -551,7 +545,7 @@ values as tInt[]
 remainder as tInt
 conversion as tIntBase
 
-  conversion.sign = n.sign
+  conversion.bNegative = n.bNegative
   if precision < 1 then precision = 1
   conversion.digits.length = precision-1
   conversion.precision = precision
@@ -563,7 +557,7 @@ conversion as tIntBase
   endwhile
 
   remainder = n
-  remainder.sign = 0
+  remainder.bNegative = 0
 
 digit as integer = 0
 
@@ -586,7 +580,7 @@ endfunction conversion
 function Int_ToStringRaw( n ref as tInt )
 s$ as string
 
-  if n.sign < 0 then s$ = "- "
+  if n.bNegative then s$ = "- "
   s$ = s$ + "precision: " + str(n.precision) + " "
   for i = 0 to n.digits.length
     s$ = s$ + str( n.digits[i] ) + " "
@@ -599,7 +593,7 @@ endfunction s$
 function Int_ToStringRawB( n ref as tIntBase )
 s$ as string
 
-  if n.sign < 0 then s$ = "- "
+  if n.bNegative then s$ = "- "
   s$ = s$ + "precision: " + str(n.precision) + " "
   s$ = s$ + "base: " + str(n.base) + " ( "
   for i = 0 to n.digits.length
