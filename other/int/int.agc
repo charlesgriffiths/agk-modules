@@ -208,9 +208,16 @@ digit as integer = 0
 endfunction digit
 
 
-// todo: ignore digits that are insigificant to n's precision
 function Int_AddDigit( n ref as tInt, place as integer, value as integer )
 
+  while n.digits.length >= 0
+    if not n.digits[n.digits.length]
+      n.digits.remove( n.digits.length )
+    else
+      exit
+    endif
+  endwhile
+  
   if value
     index = place - n.power
 
@@ -222,8 +229,11 @@ function Int_AddDigit( n ref as tInt, place as integer, value as integer )
       else
         n.digits.insert( 0, 0 )
       endif
+      if n.precision > 0 and n.digits.length > n.precision+2 then exit
     endwhile
+
     if index > n.digits.length then n.digits.length = index
+    if index < 0 then exitfunction
     inc value, n.digits[index]
     if value < 0
       borrow = 0
